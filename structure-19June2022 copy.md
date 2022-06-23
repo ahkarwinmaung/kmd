@@ -45,22 +45,23 @@ FYI - **TABLE_NAME** | [FIELD_NAME] | {FIELD_TYPE} | (FIELD_VALUE)
 
 # Frontend pages
 **Admin**
-1. Admin login
-2. create new Item
-3. add SubItems (repeater form)
-4. manage items (list table)
+[AungMyintMyat], [AungShweMoe], [NyanLinHtet], [ThantNyiLin], [YeMinOak]
+1. Admin login - []
+2. create new Item - []
+3. add SubItems (repeater form) - []
+4. manage items (list table) - []
     delete button (soft delete)
 
 **User**
-5. User Register
-6. User Login
-7. Home page [https://mangaplaza.com/]
+5. User Register - [KyawKo]
+6. User Login - [MinThuKyaw]
+7. Home page [https://mangaplaza.com/] - [SiThu]
     - banner carousel
     - listing (group by category)
-8. Listing page
+8. Listing page - [AungThantZin]
     - search (keyword search by **Items** -> [Name]) [ajax]
-9. Category listing page [https://mangaplaza.com/listing/48/]
-10. Detail page [https://mangaplaza.com/title/0303000003/?content_id=103030000030001]
+9. Category listing page [https://mangaplaza.com/listing/48/] - [AhKarWinMaung]
+10. Detail page [https://mangaplaza.com/title/0303000003/?content_id=103030000030001] - [AhKarWinMaung]
     - detail banner (thumbnail, name, author)
     - list of **SubItems**
     - list of **Feedbacks**
