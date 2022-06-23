@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item | Manga</title>
+
+    <link rel="stylesheet" href="public/css/uikit.min.css">
+
+    <link rel="stylesheet" href="public/css/ahkar.css">
+
+    <script src="public/js/jquery-3.4.1.min.js"></script>
+    <script src="public/js/uikit.min.js"></script>
+    <script src="public/js/uikit-icons.min.js"></script>
+
+</head>
+<body class="detail">
+
+
+    <!-- Header -> -->
+    <header>
+        <div class="uk-container main-container">
+            Header
+        </div>
+    </header>
+    <!-- Header <- -->
+
+
+
+    <!-- Body content -> -->
+    <section class="body-content">
+        <div class="uk-container main-container">
+
+            <div class="detail-wrap">
+
+                <!-- Header -->
+                <div class="detail-header card-box">
+                    <a class="detail-header-back default-button" href="index.html">
+                        <span uk-icon="icon: arrow-left; ratio: 1.7;"></span>
+                    </a>
+
+                    <h1 class="detail-header-title">Item Name</h1>
+                </div>
+
+
+                <!-- Item -->
+                <div class="detail-item">
+                    <div class="detail-item-left card-box">
+                        <img class="detail-item-image" src="public/images/placeholder.jpeg" title="Item Name" alt="Item Name">
+                    </div>
+
+                    <div class="detail-item-right card-box">
+                        <ul>
+                            <li>
+                                <span>Author</span>
+                                <span>Author Name</span>
+                            </li>
+                            <li>
+                                <span>Genre</span>
+                                <span>Genres Name</span>
+                            </li>
+                            <li>
+                                <span>Release</span>
+                                <span>1 June 2022</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+
+                <!-- Description -->
+                <div class="detail-desc card-box">
+                    <div class="detail-desc-header">
+                        <span uk-icon="icon: bolt; ratio: 1.2;"></span>
+                        <h3 class="card-title">Description</h3>
+                    </div>
+
+                    <div class="detail-desc-body">
+                        <p>
+                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Perspiciatis animi, ipsum iste assumenda voluptatum expedita perferendis. Ratione fuga amet quaerat veritatis consectetur quisquam ad vel deleniti optio, error placeat unde!
+                        </p>
+                    </div>
+                </div>
+
+                
+                <!-- Episodes -->
+                <div class="detail-eps card-box" uk-filter="target: .detail-eps-filter;">
+                    <div class="detail-eps-header">
+                        <span uk-icon="icon: file-text; ratio: 1.2;"></span>
+                        <h3 class="card-title">Latest Manga Release</h3>
+                        <button class="detail-eps-sorting default-button asc">
+                            <span class="sorting-icon" uk-icon="icon: triangle-down; ratio: 1.3;"></span>
+                            <span class="sorting-text asc">A<span>SC</span></span>
+                            <span class="sorting-text desc">DE<span>SC</span></span>
+                            <span class="sorting-text-static">SC</span>
+                        </button>
+                        <!-- hidden controls -->
+                        <ul class="detail-eps-filter-controls">
+                            <li class="asc uk-active" uk-filter-control="sort: data-index;"><a href="#">Ascending</a></li>
+                            <li class="desc" uk-filter-control="sort: data-index; order: desc;"><a href="#">Descending</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="detail-eps-list">
+                        <ul class="detail-eps-filter uk-grid-small uk-child-width-1-1 uk-child-width-1-2@m" uk-grid>
+                            <li data-index="1">
+                                <div>
+                                    <div>
+                                        <h4>Episode 1</h4>
+                                        <span>6 days ago</span>
+                                    </div>
+                                    <div>
+                                        <a href="reading.html">Read</a>
+                                    </div>
+                                </div>
+                            </li>
+                            <li data-index="2">
+                                <div>
+                                    <div>
+                                        <h4>Episode 2</h4>
+                                        <span>5 days ago</span>
+                                    </div>
+                                    <div>
+                                        <a href="reading.html">Read</a>
+                                    </div>
+                                </div>
+                            </li>
+                            <li data-index="3">
+                                <div>
+                                    <div>
+                                        <h4>Episode 3</h4>
+                                        <span>4 days ago</span>
+                                    </div>
+                                    <div>
+                                        <a href="reading.html">Read</a>
+                                    </div>
+                                </div>
+                            </li>
+                            <li data-index="4">
+                                <div>
+                                    <div>
+                                        <h4>Episode 4</h4>
+                                        <span>3 days ago</span>
+                                    </div>
+                                    <div>
+                                        <a href="reading.html">Read</a>
+                                    </div>
+                                </div>
+                            </li>
+                            <li data-index="5">
+                                <div>
+                                    <div>
+                                        <h4>Episode 5</h4>
+                                        <span>2 days ago</span>
+                                    </div>
+                                    <div>
+                                        <a href="reading.html">Read</a>
+                                    </div>
+                                </div>
+                            </li>
+                            <li data-index="6">
+                                <div>
+                                    <div>
+                                        <h4>Episode 6</h4>
+                                        <span>1 day ago</span>
+                                    </div>
+                                    <div>
+                                        <a href="reading.html">Read</a>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+
+                <!-- Feedbacks -->
+                <div class="detail-feedback card-box">
+                    <div class="detail-feedback-header">
+                        <span uk-icon="icon: comments; ratio: 1.2;"></span>
+                        <h3 class="card-title">Feedbacks</h3>
+                    </div>
+
+                    <ul class="detail-feedback-list">
+                        <li>
+                            <div>
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/8/87/Avatar_poe84it.png" alt="User Name">
+                                <h6>User Name</h6>
+                            </div>
+                            <p>
+                                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptatem, ab saepe. At, ad recusandae magni fugit quasi dignissimos adipisci sapiente velit dolor esse consectetur, odio sequi facere id reprehenderit laborum.
+                            </p>
+                            <span>15 June 2022</span>
+                        </li>
+                        <li>
+                            <div>
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/8/87/Avatar_poe84it.png" alt="User Name">
+                                <h6>User Name</h6>
+                            </div>
+                            <p>
+                                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptatem, ab saepe. At, ad recusandae magni fugit quasi dignissimos adipisci sapiente velit dolor esse consectetur, odio sequi facere id reprehenderit laborum.
+                            </p>
+                            <span>15 June 2022</span>
+                        </li>
+                        <li>
+                            <div>
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/8/87/Avatar_poe84it.png" alt="User Name">
+                                <h6>User Name</h6>
+                            </div>
+                            <p>
+                                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptatem, ab saepe. At, ad recusandae magni fugit quasi dignissimos adipisci sapiente velit dolor esse consectetur, odio sequi facere id reprehenderit laborum.
+                            </p>
+                            <span>15 June 2022</span>
+                        </li>
+                    </ul>
+
+                    <div class="detail-feedback-post">
+                        <form class="detail-feedback-form">
+                            <label for="detail-feedback-input">Leave your feedback here</label>
+                            <div>
+                                <textarea id="detail-feedback-input" placeholder="Lorem ipsum dolor sit, amet consectetur adipisicing elit ..."></textarea>
+                                <div class="feedback-error-message">Please fill your feedback</div>
+                            </div>
+                            <button type="submit">Submit</button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+    <!-- Body content <- -->
+
+
+
+    <!-- Footer -> -->
+    <footer>
+        <div class="uk-container main-container">
+            Footer
+        </div>
+    </footer>
+    <!-- Footer <- -->
+
+
+
+
+
+    <script src="public/js/ahkar-common.js"></script>
+    <script src="public/js/ahkar-detail.js"></script>
+
+
+</body>
+</html>
