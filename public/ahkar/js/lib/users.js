@@ -1,9 +1,9 @@
-class Mangas {
+class Users {
 
     constructor() {
         this.spDbLib = new sprLibPhp();
 
-        this.listName = 'mangas';
+        this.listName = 'users';
     }
 
 
@@ -75,9 +75,39 @@ class Mangas {
         if (!id) return false;
 
         return this.getData({
-            queryFilter: `ID eq ${id}`,
+            queryFilter: `id eq ${id}`,
             queryLimit: 1,
         });
     } // getAnItem() <-
+
+
+    getByIDs(IDs)  {
+        let returnData = new Array();
+
+        if ( IDs && IDs.length )   {
+            let queryFilter = ``;
+
+            $.each(IDs, (index, value) => {
+                if ( !isNaN(value) )   {
+                    if ( queryFilter ) queryFilter += ' or ';
+                    if ( IDs.length > 1 )   queryFilter += '(';
+                    queryFilter += `id eq ${value}`;
+                    if ( IDs.length > 1 )   queryFilter += ')';
+                }
+            });
+            // console.log( 'Users.getByIDs() -> queryFilter -', queryFilter );
+            
+            let usersResult = this.getData({
+                queryFilter,
+            });
+            // console.log( 'Users.getByIDs() -> usersResult -', usersResult );
+
+            if ( usersResult && usersResult.results && usersResult.results.length )   {
+                returnData = [...usersResult.results];
+            }
+        }
+
+        return returnData;
+    } // getByIDs() <-
 
 }

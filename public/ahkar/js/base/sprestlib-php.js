@@ -1,7 +1,7 @@
 class sprLibPhp {
 
 	constructor() {
-		this.dbPath = `public/js/ahkar/base/sql/db.php`;
+		this.dbPath = `public/ahkar/js/base/sql/db.php`;
 		this.env = config.env;
 		this.baseSpUrl = config.baseSpUrl;
 		this.baseUrl = config.baseUrl;

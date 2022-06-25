@@ -1,9 +1,9 @@
-class Genres {
+class Feedbacks {
 
     constructor() {
         this.spDbLib = new sprLibPhp();
 
-        this.listName = 'genres';
+        this.listName = 'feedbacks';
     }
 
 
@@ -75,7 +75,7 @@ class Genres {
         if (!id) return false;
 
         return this.getData({
-            queryFilter: `ID eq ${id}`,
+            queryFilter: `id eq ${id}`,
             queryLimit: 1,
         });
     } // getAnItem() <-

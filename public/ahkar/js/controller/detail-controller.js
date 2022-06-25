@@ -2,15 +2,22 @@
 class DetailController  {
 
     constructor()   {
-        this.mangas = new Mangas();
-        this.genres = new Genres();
-        this.episodes = new Episodes();
+        // libs
+        this.libs = {
+            mangas: new Mangas(),
+            genres: new Genres(),
+            episodes: new Episodes(),
+            feedbacks: new Feedbacks(),
+            users: new Users(),
+        };
 
         // store
         this.store = {
             mangaData: null,
             genreData: null,
             episodes: null,
+            feedbacks: null,
+            feedbacksUsers: null,
         };
     }
 
@@ -18,8 +25,8 @@ class DetailController  {
     storeMangaData(id)    {
         return new Promise((resolve, reject) => {
             try {
-                let mangaResult = this.mangas.getData({
-                    queryFilter: `id eq ${id}`,
+                let mangaResult = this.libs.mangas.getData({
+                    queryFilter: `(id eq ${id}) and (publish_status eq 'true')`,
                     queryLimit: 1,
                 });
                 console.log( 'storeMangaData() -> mangaResult -', mangaResult );
@@ -39,11 +46,11 @@ class DetailController  {
     } // storeMangaData() <-
 
 
-    bindDetails()   {
+    renderDetails()   {
         return new Promise((resolve, reject) => {
             try {
                 let mangaData = this.store.mangaData;
-                // console.log( 'bindDetails() -> mangaData -', mangaData );
+                // console.log( 'renderDetails() -> mangaData -', mangaData );
         
                 if ( mangaData )   {
                     // ? title
@@ -53,7 +60,7 @@ class DetailController  {
                     // ? thumbnail
                     if ( mangaData.thumbnail )   {
                         $('.detail-item-left').html(
-                            `<img class="detail-item-image" src="${ mangaData.thumbnail }" title="${ mangaData.name || '' }" alt="${ mangaData.name || '' }">`
+                            `<img class="detail-item-image" data-src="${ mangaData.thumbnail }" title="${ mangaData.name || '' }" alt="${ mangaData.name || '' }" uk-img>`
                         );
                     } else  $('.detail-item-left').hide();
 
@@ -61,8 +68,8 @@ class DetailController  {
                     // store genreData for details -> genre name
                     let genreID = mangaData.genre_id;
                     if ( genreID && !isNaN(genreID) )   {
-                        let genreResult = this.genres.getAnItem( genreID );
-                        console.log( 'bindDetails() -> genreResult -', genreResult );
+                        let genreResult = this.libs.genres.getAnItem( genreID );
+                        console.log( 'renderDetails() -> genreResult -', genreResult );
                         if ( genreResult && genreResult.results && genreResult.results.length )   {
                             this.store.genreData = genreResult.results[0];
                         }
@@ -103,17 +110,26 @@ class DetailController  {
 
                     // ? episodes
                     // store episodes data
-                    let episodesResult = this.episodes.getData({
+                    let episodesResult = this.libs.episodes.getData({
                         queryFilter: `manga_id eq ${mangaData.id}`,
                         queryOrderby: `created_at asc`,
-                        // queryOrderby: `created_at ${ $('.detail-eps-sorting').is('.desc') ? 'desc' : 'asc' }`, // dont't need to sort by query
+                        // queryOrderby: `created_at ${ $('.detail-eps-sorting').is('.desc') ? 'desc' : 'asc' }`, // if need to sort by query
                     });
-                    console.log( 'bindDetails() -> episodesResult -', episodesResult );
-                    if ( episodesResult && episodesResult.results )   {
-                        this.store.episodes = episodesResult.results;
-                    }
+                    console.log( 'renderDetails() -> episodesResult -', episodesResult );
+                    if ( episodesResult && episodesResult.results )   this.store.episodes = episodesResult.results;
                     // render episodes
                     this.renderEpisodes( this.store.episodes );
+
+                    // ? feedbacks
+                    // store feedbacks data
+                    let feedbacksResult = this.libs.feedbacks.getData({
+                        queryFilter: `manga_id eq ${mangaData.id}`,
+                        queryOrderby: `created_at desc`,
+                    });
+                    console.log( 'renderDetails() -> feedbacksResult -', feedbacksResult );
+                    if ( feedbacksResult && feedbacksResult.results && feedbacksResult.results.length )   this.store.feedbacks = feedbacksResult.results;
+                    // render feedbacks
+                    this.renderFeedbacks( this.store.feedbacks );
                 } else  { // no manga data
                     this.noResult();
                 }
@@ -123,7 +139,7 @@ class DetailController  {
                 reject(err);
             }
         });
-    } // bindDetails() <-
+    } // renderDetails() <-
 
 
     renderEpisodes(episodes)    {
@@ -144,7 +160,10 @@ class DetailController  {
                                 <span>${ timeSince(new Date(value.created_at)) } ago</span>
                             </div>
                             <div>
-                                <a href="reading.html?id=${ value.id }">Read</a>
+                                <a href="read.html?id=${ value.id }">
+                                    <span>Read</span>
+                                    <span uk-icon="chevron-right"></span>
+                                </a>
                             </div>
                         </div>
                     </li>`
@@ -152,7 +171,7 @@ class DetailController  {
 
                 $episode.appendTo( $wrapper );
             });
-        } else { // withour episode
+        } else { // without episode
             $('.detail-eps').hide(); // hide the episodes section
         };
     } // renderEpisodes() <-
@@ -164,11 +183,55 @@ class DetailController  {
     } // noResult() <-
 
 
+    renderFeedbacks(feedbacks)   {
+        let $wrapper = $('.detail-feedback-list');
+        $wrapper.html('');
+
+        if ( feedbacks && feedbacks.length )   {
+            // get users data
+            let userIDs = feedbacks.map(f => f.user_id);
+            this.store.feedbacksUsers =  this.libs.users.getByIDs( userIDs );
+            console.log( 'renderFeedbacks() -> feedbackUsers -', this.store.feedbacksUsers );
+
+            // render
+            $.each(feedbacks, (index, value) => {
+                let feedbackUserData = [...this.store.feedbacksUsers].find(fu => fu.id === value.user_id);
+
+                let $feedback = $(
+                    `<li data-id="${ value.id }">
+                        ${
+                            feedbackUserData
+                            ?
+                                `<div>
+                                    <a href="mailto:${ feedbackUserData.email }" target="_blank">
+                                        <div data-src="${ !isEmpty(feedbackUserData.image) ? feedbackUserData.image : 'public/ahkar/images/default-profile.png' }" uk-img></div>
+                                        <span>${ feedbackUserData.name }</span>
+                                    </a>
+                                </div>`
+                            : ''
+                        }
+                        <p>
+                            ${ value.description || '' }
+                        </p>
+                        <span>${ timeSince(new Date(value.created_at)) } ago</span>
+                    </li>`
+                );
+
+                $feedback.appendTo( $wrapper );
+            });
+        } else  { // without feedbacks
+            $wrapper.hide(); // hide the feedbacks list
+        }
+    } // renderFeedbacks() <-
+
+
     submitFeedback(feedback)    {
         console.log( 'submitFeedback() -> feedback -', feedback );
     } // submitFeedback() <-
 
 }
+
+
 
 
 
@@ -182,8 +245,7 @@ $(document).ready(function()    {
 
         if ( idParam && !isNaN(idParam) && +idParam )   {
             await detailController.storeMangaData( +idParam );
-
-            await detailController.bindDetails();
+            await detailController.renderDetails();
         } else  detailController.noResult(); // incorrect id url param
     }());
 

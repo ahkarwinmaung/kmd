@@ -1,9 +1,9 @@
-class Episodes {
+class Genres {
 
     constructor() {
         this.spDbLib = new sprLibPhp();
 
-        this.listName = 'episodes';
+        this.listName = 'genres';
     }
 
 
@@ -75,7 +75,7 @@ class Episodes {
         if (!id) return false;
 
         return this.getData({
-            queryFilter: `ID eq ${id}`,
+            queryFilter: `id eq ${id}`,
             queryLimit: 1,
         });
     } // getAnItem() <-
