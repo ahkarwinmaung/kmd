@@ -219,7 +219,7 @@ class DetailController  {
 
             // render
             $.each(feedbacks, (index, value) => {
-                let isYou = this.store.loginUser && this.store.loginUser.id === value.user_id;
+                let isOwner = this.store.loginUser && this.store.loginUser.id === value.user_id;
                 let feedbackUserData = [...this.store.feedbacksUsers].find(fu => fu.id === value.user_id);
 
                 let $feedback = $(
@@ -228,26 +228,39 @@ class DetailController  {
                             ${
                                 feedbackUserData
                                 ?
-                                    `<div class="detail-feedback-title">
+                                    `<div class="detail-feedback-legend-title">
                                         ${
-                                            isYou
+                                            isOwner
                                             ? `<div>`
                                             : `<a href="mailto:${ feedbackUserData.email }" target="_blank">`
                                         }
                                         <div data-src="${ !isEmpty(feedbackUserData.image) ? feedbackUserData.image : 'public/ahkar/images/default-profile.png' }" uk-img></div>
-                                        <span>${ feedbackUserData.name }${ isYou ? ' (You)' : '' }</span>
+                                        <span>${ feedbackUserData.name }${ isOwner ? ' (You)' : '' }</span>
                                         ${
-                                            isYou
+                                            isOwner
                                             ? `</div>`
                                             : `</a>`
                                         }
                                     </div>`
                                 : ''
                             }
-                            <p class="detail-feedback-content">
-                                ${ value.description || '' }
-                            </p>
-                            <span class="detail-feedback-time">${ timeSince(new Date(value.created_at)) } ago</span>
+                            <div class="detail-feedback-legend-inner">
+                                <p class="detail-feedback-content">
+                                    ${ value.description || '' }
+                                </p>
+                                <div class="detail-feedback-footer">
+                                    <span class="detail-feedback-time">${ timeSinceSingle(new Date(value.created_at)) }</span>
+                                    <button class="detail-feedback-reply" data-parent="${value.id}">Reply</button>
+                                    ${
+                                        isOwner
+                                        ?
+                                            `<button class="detail-feedback-edit" data-id="${value.id}">
+                                                Edit
+                                            </button>`
+                                        : ''
+                                    }
+                                </div>
+                            </div>
                         </div>
                     </li>`
                 );

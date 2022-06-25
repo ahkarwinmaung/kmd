@@ -126,11 +126,11 @@ function timeSince(date) {
 
 	if (interval > 1) 	return `${Math.floor(interval)} year${Math.floor(interval) > 1 ? 's' : ''}`;
 
-	interval = seconds / 2592000;
-	if (interval > 1) 	return `${Math.floor(interval)} month${Math.floor(interval) > 1 ? 's' : ''}`;
+	interval = seconds / 604800;
+	if (interval > 1) 	return `${Math.floor(interval)} week${Math.floor(interval) > 1 ? 's' : ''}`;
 
 	interval = seconds / 86400;
-	if (interval > 1) 	return `${Math.floor(interval)} day${Math.floor(interval) > 1 ? 's' : ''}`;
+	if (interval > 1) 	return Math.floor(interval) === 1 ? 'yesterday' : `${Math.floor(interval)} days`;
 
 	interval = seconds / 3600;
 	if (interval > 1) 	return `${Math.floor(interval)} hour${Math.floor(interval) > 1 ? 's' : ''}`;
@@ -139,6 +139,26 @@ function timeSince(date) {
 	if (interval > 1) 	return `${Math.floor(interval)} minute${Math.floor(interval) > 1 ? 's' : ''}`;
 
 	return `${Math.floor(seconds)} second${Math.floor(interval) > 1 ? 's' : ''}`;
+}
+function timeSinceSingle(date) {
+	let seconds = Math.floor((new Date() - date) / 1000);
+	let interval = seconds / 31536000;
+
+	if (interval > 1) 	return `${Math.floor(interval)}y`;
+
+	interval = seconds / 604800;
+	if (interval > 1) 	return `${Math.floor(interval)}w`;
+
+	interval = seconds / 86400;
+	if (interval > 1) 	return `${Math.floor(interval)}d`;
+
+	interval = seconds / 3600;
+	if (interval > 1) 	return `${Math.floor(interval)}h`;
+
+	interval = seconds / 60;
+	if (interval > 1) 	return `${Math.floor(interval)}m`;
+
+	return `${Math.floor(seconds)}s`;
 }
 
 
