@@ -135,7 +135,7 @@ $(document).ready(function()    {
         if ( isValid )  {
             await login(email, password).then(loginUser => {
                 // console.log( 'login(success) -> loginUser -', loginUser );
-                createCookie(globalCommonController.LOGIN_COOKIE, loginUser.id);
+                createCookie(globalCommonController.LOGIN_COOKIE, loginUser.id, 24 * 365);
                 location.reload();
             }).catch(err => {
                 // console.log( 'login(fail) -> err -', err );

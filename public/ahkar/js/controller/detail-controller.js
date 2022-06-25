@@ -131,7 +131,7 @@ class DetailController  {
                     // store feedbacks data
                     let feedbacksResult = this.libs.feedbacks.getData({
                         queryFilter: `manga_id eq ${mangaData.id}`,
-                        queryOrderby: `created_at desc`,
+                        queryOrderby: `created_at asc`,
                     });
                     console.log( 'renderDetails() -> feedbacksResult -', feedbacksResult );
                     if ( feedbacksResult && feedbacksResult.results && feedbacksResult.results.length )   this.store.feedbacks = feedbacksResult.results;
@@ -214,6 +214,7 @@ class DetailController  {
 
             // get users data
             let userIDs = feedbacks.map(f => f.user_id);
+            if ( this.store.loginUser && this.store.loginUser.id && !userIDs.includes(this.store.loginUser.id) )     userIDs.push( this.store.loginUser.id ); // store login user's data for the purpose of new comment
             this.store.feedbacksUsers =  this.libs.users.getByIDs( userIDs );
             console.log( 'renderFeedbacks() -> feedbackUsers -', this.store.feedbacksUsers );
 
@@ -223,7 +224,6 @@ class DetailController  {
                 let feedbackUserData = [...this.store.feedbacksUsers].find(fu => fu.id === value.user_id);
 
                 let childFeedbacks = [...this.store.feedbacks].filter(f => f.parent_id === value.id);
-                console.log( 'childFeedbacks -', childFeedbacks );
 
                 let $feedback = $(
                     `<li data-id="${ value.id }">
@@ -272,14 +272,14 @@ class DetailController  {
                                 ${ // bind replies
                                     childFeedbacks && childFeedbacks.length
                                     ?
-                                        `<ul class="detail-feedback-child">
+                                        `<ul class="detail-feedback-child" data-id="${ value.id }">
                                             ${
                                                 childFeedbacks.map((childValue, childIndex) => {
                                                     let isChildOwner = this.store.loginUser && this.store.loginUser.id === childValue.user_id;
                                                     let feedbackChildUserData = [...this.store.feedbacksUsers].find(fu => fu.id === childValue.user_id);
 
                                                     let child = 
-                                                        `<li>
+                                                        `<li data-id="${ childValue.id }">
                                                             <div class="detail-feedback-legend" data-id="${ childValue.id }">
                                                                 ${
                                                                     feedbackChildUserData
@@ -424,8 +424,80 @@ class DetailController  {
 
 
     submitFeedback(feedback)    {
-        console.log( 'submitFeedback() -> feedback -', feedback );
+        if ( !feedback || !this.store.loginUser )    return false;
+
+        let addFeedbackResult = this.libs.feedbacks.addNew([
+            [ 'description', replaceHTML(feedback.trim()) ],
+            [ 'user_id', this.store.loginUser.id ],
+            [ 'manga_id', this.store.mangaData.id ],
+        ]);
+        console.log( 'submitFeedback() -> addFeedbackResult -', addFeedbackResult );
+        
+        if ( addFeedbackResult && addFeedbackResult.status === 'success' && addFeedbackResult.Id )   { // success
+            let newFeedbackResult = this.libs.feedbacks.getAnItem( addFeedbackResult.Id ); // get newly added feedback
+            console.log( 'submitFeedback() -> newFeedbackResult -', newFeedbackResult );
+
+            if ( newFeedbackResult && newFeedbackResult.results && newFeedbackResult.results.length )   {
+                this.renderNewFeedback( newFeedbackResult.results[0] );
+                // push newly added feedback to store
+                this.store.feedbacks.push( newFeedbackResult.results[0] );
+            }
+        }
     } // submitFeedback() <-
+
+
+    renderNewFeedback(value, isChild = false, parentID = null)     {
+        if ( !value )   return false;
+        if ( isChild && !parentID )     return false;
+
+        let feedbackUserData = this.store.loginUser;
+
+        let $newFeedback = $(
+            `<li data-id="${ value.id }">
+                <div class="detail-feedback-legend" data-id="${ value.id }">
+                    ${
+                        feedbackUserData
+                        ?
+                            `<div class="detail-feedback-legend-title">
+                                <div>
+                                    <div data-src="${ !isEmpty(feedbackUserData.image) ? feedbackUserData.image : 'public/ahkar/images/default-profile.png' }" uk-img></div>
+                                    <span>${ feedbackUserData.name } (You)</span>
+                                </div>
+                            </div>`
+                        : ''
+                    }
+                    <div class="detail-feedback-legend-inner">
+                        <p class="detail-feedback-content" data-id="${ value.id }">
+                            ${ value.description || '' }
+                        </p>
+                        <div class="detail-feedback-footer">
+                            <span class="detail-feedback-time" data-id="${ value.id }">just now</span>
+                            ${ this.store.loginUser ? `<button class="detail-feedback-reply" data-id="${ value.id }">Reply</button>` : '' }
+                            <button class="detail-feedback-edit" data-id="${ value.id }">
+                                Edit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </li>`
+        );
+
+        // update UI
+        if ( isChild )   { // if is a reply
+            let $childWrap = $(`.detail-feedback-child[data-id="${ parentID }"]`);
+            if ( !$childWrap || !$childWrap.length )   { // search for the child list and if not -> create and append
+                $childWrap = $(`<ul class="detail-feedback-child" data-id="${ parentID }"></ul>`);
+                let $parentLegend = $(`.detail-feedback-legend[data-id="${ parentID }"]`);
+                if ( $parentLegend && $parentLegend.length )   $parentLegend.find('.detail-feedback-legend-inner').append( $childWrap ); // append to parent legend inner
+            }
+            $childWrap.append( $newFeedback );
+            // TODO - (to remove the respective reply section)
+        } else  {
+            $newFeedback.appendTo('.detail-feedback-list');
+            $('#detail-feedback-input').val('');
+        }
+        this.highlightFeedbackLegend( value.id );
+    } // renderNewFeedback() <-
 
 
     async highlightFeedbackLegend(id)     {

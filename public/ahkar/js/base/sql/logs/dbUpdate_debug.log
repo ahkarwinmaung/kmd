@@ -964,3 +964,26 @@
 
 )
 
+[2022-06-26 06:37:11]: Array
+(
+    [method] => update
+    [table] => feedbacks
+    [id] => 20
+    [fields] => Array
+        (
+            [0] => Array
+                (
+                    [0] => description
+                    [1] => okei sir update ...
+                )
+
+            [1] => Array
+                (
+                    [0] => updated_at
+                    [1] => 2022-06-26 05:07:11
+                )
+
+        )
+
+)
+
