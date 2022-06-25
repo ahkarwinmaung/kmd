@@ -164,7 +164,8 @@ function timeSinceSingle(date) {
 	interval = seconds / 60;
 	if (interval > 1) 	return `${Math.floor(interval)}m`;
 
-	return `${Math.floor(seconds)}s`;
+	return `just now`;
+	// return `${Math.floor(seconds)}s`;
 }
 
 

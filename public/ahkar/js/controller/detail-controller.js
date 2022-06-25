@@ -167,7 +167,7 @@ class DetailController  {
                         <div>
                             <div>
                                 <h4>${ value.name }</h4>
-                                <span>${ timeSince(new Date(value.created_at)) } ago</span>
+                                <span class="time-since" data-time="${ value.created_at }">${ timeSince(new Date(value.created_at)) } ago</span>
                             </div>
                             <div>
                                 ${
@@ -252,7 +252,7 @@ class DetailController  {
                                     ${ value.description || '' }
                                 </p>
                                 <div class="detail-feedback-footer">
-                                    <span class="detail-feedback-time" data-id="${ value.id }">${ timeSinceSingle(new Date(value.created_at)) }</span>
+                                    <span class="detail-feedback-time time-since-single" data-time="${ value.created_at }" data-id="${ value.id }">${ timeSinceSingle(new Date(value.created_at)) }</span>
                                     ${
                                         new Date(value.updated_at) > new Date(value.created_at)
                                         ?
@@ -305,7 +305,7 @@ class DetailController  {
                                                                         ${ childValue.description || '' }
                                                                     </p>
                                                                     <div class="detail-feedback-footer">
-                                                                        <span class="detail-feedback-time" data-id="${ childValue.id }">${ timeSinceSingle(new Date(childValue.created_at)) }</span>
+                                                                        <span class="detail-feedback-time time-since-single" data-time="${ childValue.created_at }" data-id="${ childValue.id }">${ timeSinceSingle(new Date(childValue.created_at)) }</span>
                                                                         ${
                                                                             new Date(childValue.updated_at) > new Date(childValue.created_at)
                                                                             ?
@@ -471,7 +471,7 @@ class DetailController  {
                             ${ value.description || '' }
                         </p>
                         <div class="detail-feedback-footer">
-                            <span class="detail-feedback-time" data-id="${ value.id }">just now</span>
+                            <span class="detail-feedback-time time-since-single" data-time="${ value.created_at }" data-id="${ value.id }">${ timeSinceSingle(new Date(value.created_at)) }</span>
                             ${ this.store.loginUser ? `<button class="detail-feedback-reply" data-id="${ value.id }">Reply</button>` : '' }
                             <button class="detail-feedback-edit" data-id="${ value.id }">
                                 Edit

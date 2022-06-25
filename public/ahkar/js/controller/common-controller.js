@@ -78,6 +78,19 @@ class CommonController    {
         if ( $('#login-modal.uk-modal').length )   UIkit.modal('#login-modal').show();
     } // showLoginModal() <-
 
+
+    refreshAllTimeSince()   {
+        $('.time-since[data-time]').each(function()     {
+            let date = $(this).attr('data-time');
+            $(this).text( timeSince( new Date(date) ) );
+        });
+
+        $('.time-since-single[data-time]').each(function()     {
+            let date = $(this).attr('data-time');
+            $(this).text( timeSinceSingle( new Date(date) ) );
+        });
+    }
+
 }
 
 
@@ -103,6 +116,10 @@ function logout()   {
 
 
 $(document).ready(function()    {
+
+    setInterval(() => { // refresh every 1 minute
+        globalCommonController.refreshAllTimeSince();
+    }, 10000);
 
     // show login modal buttons click
     $(document).on('click', '.show-login-modal', function()  {
