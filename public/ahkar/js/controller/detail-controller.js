@@ -227,7 +227,7 @@ class DetailController  {
 
                 let $feedback = $(
                     `<li data-id="${ value.id }">
-                        <div class="detail-feedback-legend">
+                        <div class="detail-feedback-legend" data-id="${ value.id }">
                             ${
                                 feedbackUserData
                                 ?
@@ -280,7 +280,7 @@ class DetailController  {
 
                                                     let child = 
                                                         `<li>
-                                                            <div class="detail-feedback-legend">
+                                                            <div class="detail-feedback-legend" data-id="${ childValue.id }">
                                                                 ${
                                                                     feedbackChildUserData
                                                                     ?
@@ -401,6 +401,8 @@ class DetailController  {
                     let $time = $(`.detail-feedback-time[data-id="${id}"]`);
                     if ( $time && $time.length )    $time.after(`<span class="detail-feedback-is-edited" data-id="${ id }">Edited</span>`);
                 }
+
+                this.highlightFeedbackLegend(id);
             }
         } else  { // no val -> just focus
             let $editInput = $(`.detail-feedback-edit-wrap[data-id="${id}"]`).find('textarea');
@@ -424,6 +426,18 @@ class DetailController  {
     submitFeedback(feedback)    {
         console.log( 'submitFeedback() -> feedback -', feedback );
     } // submitFeedback() <-
+
+
+    async highlightFeedbackLegend(id)     {
+        if ( !id )  return false;
+
+        let $legend = $(`.detail-feedback-legend[data-id="${id}"]`);
+        if ( $legend && $legend.length )   {
+            $legend.addClass('highlight-legend');
+            await ahkar.wait(600);
+            $legend.removeClass('highlight-legend');
+        }
+    }
 
 }
 
