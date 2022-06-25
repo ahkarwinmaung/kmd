@@ -245,16 +245,16 @@ class DetailController  {
                                 : ''
                             }
                             <div class="detail-feedback-legend-inner">
-                                <p class="detail-feedback-content">
+                                <p class="detail-feedback-content" data-id="${ value.id }">
                                     ${ value.description || '' }
                                 </p>
                                 <div class="detail-feedback-footer">
                                     <span class="detail-feedback-time">${ timeSinceSingle(new Date(value.created_at)) }</span>
-                                    <button class="detail-feedback-reply" data-parent="${value.id}">Reply</button>
+                                    ${ this.store.loginUser && false ? `<button class="detail-feedback-reply" data-id="${ value.id }">Reply</button>` : '' }
                                     ${
                                         isOwner
                                         ?
-                                            `<button class="detail-feedback-edit" data-id="${value.id}">
+                                            `<button class="detail-feedback-edit" data-id="${ value.id }">
                                                 Edit
                                             </button>`
                                         : ''
@@ -271,6 +271,76 @@ class DetailController  {
             $wrapper.hide(); // hide the feedbacks list
         }
     } // renderFeedbacks() <-
+
+
+    feedbackEdit(id)     {
+        if ( !id )   return false;
+
+        let $feedbackContent = $(`.detail-feedback-content[data-id="${id}"]`);
+        if ( $feedbackContent && $feedbackContent.length )   { // prevent error
+            if ( !$(`.detail-feedback-edit-wrap[data-id="${id}"]`).length )   { // prevent duplicate
+                $feedbackContent.hide().after(
+                    `<div class="detail-feedback-edit-wrap" data-id="${ id }">
+                        <textarea maxlength="500">${ [...this.store.feedbacks].find(f => f.id === id).description }</textarea>
+                        <div>
+                            <button class="detail-feedback-edit-save" data-id="${ id }">Save</button>
+                            <button class="detail-feedback-edit-cancel" data-id="${ id }">Cancel</button>
+                        </div>
+                    </div>`
+                );
+            } else  { // just focus
+                let $editInput = $(`.detail-feedback-edit-wrap[data-id="${id}"]`).find('textarea');
+                let $editVal = $editInput.val();
+                $editInput.focus().val('').val($editVal);
+            }
+        }
+    } // feedbackEdit() <-
+
+
+    feedbackEditSave(id)    {
+        if ( !id )   return false;
+
+        let $editInput = $(`.detail-feedback-edit-wrap[data-id="${id}"]`).find('textarea');
+        if ( $editInput && $editInput.val() && $editInput.val().trim() )   {
+            let newDescription = replaceHTML($editInput.val().trim());
+            let newUpdatedAt = moment().format('YYYY-MM-DD HH:mm:ss');
+            
+            let editUpdateResult = this.libs.feedbacks.updateItem(id, [
+                [ 'description', newDescription ],
+                [ 'updated_at', newUpdatedAt ],
+            ]);
+            console.log( 'feedbackEditSave() -> editUpdateResult -', editUpdateResult );
+
+            if ( editUpdateResult && !isNaN(editUpdateResult) && +editUpdateResult )   { // success
+                // update store
+                let updateIndex = [...this.store.feedbacks].findIndex(f => f.id === +editUpdateResult);
+                this.store.feedbacks[updateIndex].description = newDescription;
+                this.store.feedbacks[updateIndex].updated_at = newUpdatedAt;
+
+                // update UI
+                let $feedbackContent = $(`.detail-feedback-content[data-id="${id}"]`);
+                if ( $feedbackContent && $feedbackContent.length )  $feedbackContent.text(newDescription).show();
+
+                let $editWrap = $(`.detail-feedback-edit-wrap[data-id="${id}"]`);
+                if ( $editWrap && $editWrap.length )  $editWrap.remove();
+            }
+        } else  { // no val -> just focus
+            let $editInput = $(`.detail-feedback-edit-wrap[data-id="${id}"]`).find('textarea');
+            let $editVal = $editInput.val();
+            $editInput.focus().val('').val($editVal);
+        }
+    } // feedbackEditSave() <-
+    
+    
+    feedbackEditCancel(id)    {
+        if ( !id )   return false;
+
+        let $feedbackContent = $(`.detail-feedback-content[data-id="${id}"]`);
+        if ( $feedbackContent && $feedbackContent.length )  $feedbackContent.show();
+        
+        let $editWrap = $(`.detail-feedback-edit-wrap[data-id="${id}"]`);
+        if ( $editWrap && $editWrap.length )  $editWrap.remove();
+    } // feedbackEditCancel() <-
 
 
     submitFeedback(feedback)    {
@@ -314,6 +384,30 @@ $(document).ready(function()    {
     // init by urlParam
     let epsSortParam = getURLparam('eps-sortby');
     if ( epsSortParam && epsSortParam === 'desc' )  $('.detail-eps-sorting').click();
+
+
+    // ? feedback actions
+    // edit click
+    $(document).on('click', '.detail-feedback-edit', function()     {
+        let id = +$(this).data('id');
+        if ( id && !isNaN(id) && +id )   detailController.feedbackEdit(+id);
+    });
+    // edit keyup
+    $(document).on('keyup', '.detail-feedback-edit-wrap textarea', function()     {
+        let $editSave = $('.detail-feedback-edit-save');
+        if ( $(this).val().trim() )   $editSave.removeClass('save-disabled');
+        else    $editSave.addClass('save-disabled');
+    });
+    // edit save
+    $(document).on('click', '.detail-feedback-edit-save:not(.save-disabled)', function()     {
+        let id = +$(this).data('id');
+        if ( id && !isNaN(id) && +id )   detailController.feedbackEditSave(+id);
+    });
+    // edit cancel
+    $(document).on('click', '.detail-feedback-edit-cancel', function()     {
+        let id = +$(this).data('id');
+        if ( id && !isNaN(id) && +id )   detailController.feedbackEditCancel(+id);
+    });
 
 
     // ? feedback form

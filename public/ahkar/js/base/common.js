@@ -36,6 +36,12 @@ function getDateISOFormat(date,secondsOffset){
 }
 
 
+function replaceHTML(str) 	{
+	if ( str && typeof str === 'string' ) 	return str.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+	return str;
+}
+
+
 function createCookie(name, value, hrs) {
 	var expires;
 
