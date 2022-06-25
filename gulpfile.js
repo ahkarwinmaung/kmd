@@ -10,7 +10,7 @@ gulp.task('sass', function() {
     return gulp.src('./sass/*.sass')
         .pipe(sass.sync({ outputStyle: 'compressed' }).on('error', sass.logError))
         .pipe(rename('ahkar.css'))
-        .pipe(gulp.dest('./public/css'));
+        .pipe(gulp.dest('./public/css/ahkar'));
 });
 
 gulp.task('sass:watch', function() {

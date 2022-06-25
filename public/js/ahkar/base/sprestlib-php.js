@@ -1,6 +1,7 @@
 class sprLibPhp {
 
 	constructor() {
+		this.dbPath = `public/js/ahkar/base/sql/db.php`;
 		this.env = config.env;
 		this.baseSpUrl = config.baseSpUrl;
 		this.baseUrl = config.baseUrl;
@@ -21,7 +22,7 @@ class sprLibPhp {
 
 	items(listTable, options, successCallback, failureCallback) {
 		$.ajax({
-				url: this.baseUrl+this.workingDir+"public/js/ahkar-base/sql/db.php",
+				url: `${this.baseUrl+this.workingDir}${this.dbPath}`,
 				crossDomain: true,
 				method: "POST",
 				data: {
@@ -33,7 +34,7 @@ class sprLibPhp {
 				async: false
 			})
 			.done(function(data){
-				// clickr.log( data );
+				// console.log( data );
 				successCallback(JSON.parse(data));
 			})
 			.fail(failureCallback);
@@ -42,7 +43,7 @@ class sprLibPhp {
 	
 	itemsCAML(listTable, options, successCallback, failureCallback) {
 		$.ajax({
-			url: this.baseUrl+this.workingDir+"public/js/ahkar-base/sql/db.php",
+			url: `${this.baseUrl+this.workingDir}${this.dbPath}`,
 			crossDomain: true,
 			method: "POST",
 			data: {
@@ -63,7 +64,7 @@ class sprLibPhp {
 
 	create(listTable, fieldValues, successCallback, failureCallback, asyncFunc = false) {
 		$.ajax({
-			url: this.baseUrl+this.workingDir+"public/js/ahkar-base/sql/db.php",
+			url: `${this.baseUrl+this.workingDir}${this.dbPath}`,
 			crossDomain: true,
 			method: "POST",
 			data: {
@@ -75,7 +76,7 @@ class sprLibPhp {
 			async: asyncFunc
 		})
 		.done(function(data){
-			clickr.log(data)
+			console.log(data)
 			successCallback(JSON.parse(data));
 		})
 		.fail(failureCallback);
@@ -89,7 +90,7 @@ class sprLibPhp {
 
 	update(listTable, rowId, fieldValues, successCallback, failureCallback, asyncFunc = false) {
 		$.ajax({
-				url: this.baseUrl+this.workingDir+"public/js/ahkar-base/sql/db.php",
+				url: `${this.baseUrl+this.workingDir}${this.dbPath}`,
 				crossDomain: true,
 				method: "POST",
 				data: {
@@ -124,7 +125,7 @@ class sprLibPhp {
 
 
 		$.ajax({
-				url: this.baseUrl+this.workingDir+"public/js/ahkar-base/sql/db.php",
+				url: `${this.baseUrl+this.workingDir}${this.dbPath}`,
 				crossDomain: true,
 				dataType: 'text',
 				cache: false,
@@ -135,7 +136,7 @@ class sprLibPhp {
 				async: false,
 			})
 			.done(function(data){
-				clickr.log( data );
+				console.log( data );
 				
 				var rdatax = JSON.parse(data);
 				if (rdatax.status == 'success') {
@@ -153,7 +154,7 @@ class sprLibPhp {
 			})
 			.fail(function(e){
 				//returnData = 'error';	
-				clickr.log( e );
+				console.log( e );
 				failureCallback({'status':'error'});	
 			});
 	} // uploadImage() <-
