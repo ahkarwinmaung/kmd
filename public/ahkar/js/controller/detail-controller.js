@@ -22,6 +22,7 @@ class DetailController  {
     }
 
 
+
     storeMangaData(id)    {
         return new Promise((resolve, reject) => {
             try {
@@ -242,13 +243,6 @@ class DetailController  {
 
 $(document).ready(function()    {
 
-    // bind components
-    let components = new Components();
-    components.bindHeader();
-    components.bindFooter();
-
-
-    // controller
     let detailController = new DetailController();
 
     // ? init
