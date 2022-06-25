@@ -1,7 +1,7 @@
 
-var alertFallback = false;
 var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
 
 function isEmpty(obj) 	{
 	if (obj == null) return true;
@@ -13,6 +13,7 @@ function isEmpty(obj) 	{
 	return true;
 }
 
+
 function isInt(value){
 	if(isNaN(value)){
 		return false;
@@ -20,6 +21,7 @@ function isInt(value){
 	var x = parseFloat(value);
 	return (x|0) === x;
 }
+
 
 function getDateISOFormat(date,secondsOffset){
 	var tzoffset = date.getTimezoneOffset() * secondsOffset; //offset in seconds
@@ -33,6 +35,35 @@ function getDateISOFormat(date,secondsOffset){
 	return returnVal;
 }
 
+
+function createCookie(name, value, hrs) {
+	var expires;
+
+	if (hrs) {
+		var date = new Date();
+		date.setTime(date.getTime() + (hrs * 60 * 60 * 1000));
+		expires = "; expires=" + date.toGMTString();
+	} else {
+		expires = "";
+	}
+	document.cookie = encodeURIComponent(name) + "=" + encodeURIComponent(value) + expires + "; path=/";
+}
+
+function readCookie(name) {
+	var nameEQ = encodeURIComponent(name) + "=";
+	var ca = document.cookie.split(';');
+	for (var i = 0; i < ca.length; i++) {
+		var c = ca[i];
+		while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+		if (c.indexOf(nameEQ) === 0) return decodeURIComponent(c.substring(nameEQ.length, c.length));
+	}
+	return null;
+}
+
+function eraseCookie(name) {
+	createCookie(name, "", -1);
+}
+
 function formatAMPM(date){
 	var hours = date.getHours();
 	var minutes = date.getMinutes();
@@ -43,6 +74,7 @@ function formatAMPM(date){
 	var strTime = hours + ':' + minutes + ' '+ ampm;
 	return strTime;
 }
+
 
 function addParam(name = null, value = null)  {
 	const urlSearchParams = new URLSearchParams(window.location.search);
@@ -86,6 +118,7 @@ function getURLparam(param) 	{
 	const urlSearchParams = new URLSearchParams(window.location.search);
 	return urlSearchParams.get(param);
 }
+
 
 function timeSince(date) {
 	let seconds = Math.floor((new Date() - date) / 1000);

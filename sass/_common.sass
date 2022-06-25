@@ -1,0 +1,69 @@
+
+.body-content
+    padding: 100px 0
+
+.card-box
+    padding: 20px
+    box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, .2), 0px 2px 2px 0px rgba(0, 0, 0, .14), 0px 1px 5px 0px rgba(0, 0, 0, .12)
+    +border-radius(4px)
+
+.card-title
+    color: $black
+    font-size: 21px
+    font-weight: 500
+
+.default-button
+    color: $text-black
+    padding: 5px 16px
+    +border-radius(3px)
+    +transition-all-ease(.3s)
+    &:hover
+        color: $text-black
+        background: #eaeaea
+
+.not-found
+    display: none
+    text-align: center
+    padding: 50px 0
+    img
+        width: 300px
+        margin: 0 0 50px
+    h1
+        font-size: 16px
+        font-weight: 600
+        margin: 0 0 25px
+    a
+        color: $white
+        font-weight: 500
+        background: $primary-color
+        padding: 8px 30px
+        border: 2px solid $primary-color
+        +border-radius(4px)
+        &:hover
+            color: $primary-color
+            background: transparent
+
+.form-modal
+    .uk-modal-dialog
+        width: 400px
+        padding: 20px
+        +border-radius(8px)
+    &-title
+        font-size: 18px
+        font-weight: 500
+        text-align: center
+        margin: 0 0 25px
+    form
+        .error-message
+            display: none
+            color: #c00
+            font-size: 12px
+            margin: 5px 0 0
+        button[type="submit"]
+            color: $white
+            font-weight: 500
+            text-transform: uppercase
+            letter-spacing: .1em
+            background: $primary-color
+            padding: 8px 20px
+            +border-radius(4px)

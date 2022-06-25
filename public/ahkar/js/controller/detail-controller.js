@@ -13,6 +13,7 @@ class DetailController  {
 
         // store
         this.store = {
+            loginUser: null,
             mangaData: null,
             genreData: null,
             episodes: null,
@@ -136,6 +137,9 @@ class DetailController  {
                     if ( feedbacksResult && feedbacksResult.results && feedbacksResult.results.length )   this.store.feedbacks = feedbacksResult.results;
                     // render feedbacks
                     this.renderFeedbacks( this.store.feedbacks );
+                    // ? new feedback
+                    if ( this.store.loginUser )   $('.detail-feedback-post').show();
+                    else    $('.detail-feedback-not-user').show();
                 } else  { // no manga data
                     this.noResult();
                 }
@@ -201,6 +205,7 @@ class DetailController  {
 
             // render
             $.each(feedbacks, (index, value) => {
+                let isYou = this.store.loginUser && this.store.loginUser.id === value.user_id;
                 let feedbackUserData = [...this.store.feedbacksUsers].find(fu => fu.id === value.user_id);
 
                 let $feedback = $(
@@ -209,10 +214,18 @@ class DetailController  {
                             feedbackUserData
                             ?
                                 `<div>
-                                    <a href="mailto:${ feedbackUserData.email }" target="_blank">
-                                        <div data-src="${ !isEmpty(feedbackUserData.image) ? feedbackUserData.image : 'public/ahkar/images/default-profile.png' }" uk-img></div>
-                                        <span>${ feedbackUserData.name }</span>
-                                    </a>
+                                    ${
+                                        isYou
+                                        ? `<div>`
+                                        : `<a href="mailto:${ feedbackUserData.email }" target="_blank">`
+                                    }
+                                    <div data-src="${ !isEmpty(feedbackUserData.image) ? feedbackUserData.image : 'public/ahkar/images/default-profile.png' }" uk-img></div>
+                                    <span>${ feedbackUserData.name }${ isYou ? ' (You)' : '' }</span>
+                                    ${
+                                        isYou
+                                        ? `</div>`
+                                        : `</a>`
+                                    }
                                 </div>`
                             : ''
                         }
@@ -250,6 +263,7 @@ $(document).ready(function()    {
         let idParam = getURLparam('id');
 
         if ( idParam && !isNaN(idParam) && +idParam )   {
+            detailController.store.loginUser = await getLoginUser();
             await detailController.storeMangaData( +idParam );
             await detailController.renderDetails();
         } else  detailController.noResult(); // incorrect id url param

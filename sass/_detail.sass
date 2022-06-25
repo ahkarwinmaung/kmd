@@ -196,17 +196,11 @@ body.detail
                         border-bottom: 1px solid rgba(0, 0, 0, .2)
                     & > div
                         margin: 0 0 10px
-                        a
+                        div, a
                             display: inline-flex
                             align-items: center
                             color: $text-black
                             text-decoration: none
-                            &:hover
-                                div::after // profile image overlay
-                                        opacity: 1
-                                span::before
-                                    transform: scaleX(1)
-                                    transform-origin: bottom left
                             div // profile image
                                 position: relative
                                 width: 40px
@@ -234,6 +228,15 @@ body.detail
                                 font-size: 18px
                                 font-weight: 500
                                 +underline-easing(1px, $text-black)
+                        div
+                            span::before
+                                display: none
+                        a:hover
+                            div::after // profile image overlay
+                                    opacity: 1
+                            span::before
+                                transform: scaleX(1)
+                                transform-origin: bottom left
                     & > p // content
                         margin: 0 0 5px
                     & > span // time
@@ -241,6 +244,7 @@ body.detail
                         color: $primary-color
                         font-size: 14px
             &-post
+                display: none
                 padding: 30px 0 20px
                 border-top: 1px solid rgba(0, 0, 0, .2)
             &-form
@@ -277,3 +281,15 @@ body.detail
                     &:hover
                         color: $white
                         background: $primary-color
+            &-not-user
+                display: none
+                padding: 30px 0 20px
+                border-top: 1px solid rgba(0, 0, 0, .2)
+                p
+                    font-weight: 500
+                    margin: 0
+                button // login now
+                    font-weight: 600
+                    color: $primary-color
+                    padding: 0 0 3px
+                    +underline-easing(1px, $primary-color)
