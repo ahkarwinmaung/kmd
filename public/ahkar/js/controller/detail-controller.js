@@ -51,10 +51,15 @@ class DetailController  {
             try {
                 let mangaData = this.store.mangaData;
                 // console.log( 'renderDetails() -> mangaData -', mangaData );
-        
+
                 if ( mangaData )   {
-                    // ? title
-                    if ( mangaData.name )   $('.detail-header-title').html( mangaData.name );
+                    // ? page title & title
+                    if ( mangaData.name )   {
+                        $('title').text(function()     {
+                            return $(this).text().replaceAll('{{}}', mangaData.name);
+                        });
+                        $('.detail-header-title').html( mangaData.name );
+                    }
                     else    $('.detail-header-title').hide();
 
                     // ? thumbnail
@@ -237,6 +242,13 @@ class DetailController  {
 
 $(document).ready(function()    {
 
+    // bind components
+    let components = new Components();
+    components.bindHeader();
+    components.bindFooter();
+
+
+    // controller
     let detailController = new DetailController();
 
     // ? init
