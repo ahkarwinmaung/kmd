@@ -70,6 +70,7 @@ class CommonController    {
 
     logout()    {
         eraseCookie('loginID');
+        location.reload();
     } // logout() <-
 
 

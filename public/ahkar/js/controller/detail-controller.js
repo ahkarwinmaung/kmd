@@ -166,14 +166,23 @@ class DetailController  {
                     `<li data-index="${ epNumber }">
                         <div>
                             <div>
-                                <h4>Episode ${ epNumber } - ${ value.name }</h4>
+                                <h4>${ value.name }</h4>
                                 <span>${ timeSince(new Date(value.created_at)) } ago</span>
                             </div>
                             <div>
-                                <a href="read.html?id=${ value.id }">
-                                    <span>Read</span>
-                                    <span uk-icon="chevron-right"></span>
-                                </a>
+                                ${
+                                    this.store.loginUser || !index
+                                    ?
+                                        `<a href="read.html?id=${ value.id }">
+                                            <span>Read</span>
+                                            <span uk-icon="chevron-right"></span>
+                                        </a>`
+                                    :
+                                        `<button class="show-login-modal">
+                                            <span>Login</span>
+                                            <span uk-icon="sign-in"></span>
+                                        </button>`
+                                }
                             </div>
                         </div>
                     </li>`
@@ -198,6 +207,11 @@ class DetailController  {
         $wrapper.html('');
 
         if ( feedbacks && feedbacks.length )   {
+            // comment count to title
+            $('.detail-feedback-header .card-title').html(function()    {
+                return $(this).html() + `<span>(${feedbacks.length})</span>`;
+            });
+
             // get users data
             let userIDs = feedbacks.map(f => f.user_id);
             this.store.feedbacksUsers =  this.libs.users.getByIDs( userIDs );
@@ -210,29 +224,31 @@ class DetailController  {
 
                 let $feedback = $(
                     `<li data-id="${ value.id }">
-                        ${
-                            feedbackUserData
-                            ?
-                                `<div>
-                                    ${
-                                        isYou
-                                        ? `<div>`
-                                        : `<a href="mailto:${ feedbackUserData.email }" target="_blank">`
-                                    }
-                                    <div data-src="${ !isEmpty(feedbackUserData.image) ? feedbackUserData.image : 'public/ahkar/images/default-profile.png' }" uk-img></div>
-                                    <span>${ feedbackUserData.name }${ isYou ? ' (You)' : '' }</span>
-                                    ${
-                                        isYou
-                                        ? `</div>`
-                                        : `</a>`
-                                    }
-                                </div>`
-                            : ''
-                        }
-                        <p>
-                            ${ value.description || '' }
-                        </p>
-                        <span>${ timeSince(new Date(value.created_at)) } ago</span>
+                        <div class="detail-feedback-legend">
+                            ${
+                                feedbackUserData
+                                ?
+                                    `<div class="detail-feedback-title">
+                                        ${
+                                            isYou
+                                            ? `<div>`
+                                            : `<a href="mailto:${ feedbackUserData.email }" target="_blank">`
+                                        }
+                                        <div data-src="${ !isEmpty(feedbackUserData.image) ? feedbackUserData.image : 'public/ahkar/images/default-profile.png' }" uk-img></div>
+                                        <span>${ feedbackUserData.name }${ isYou ? ' (You)' : '' }</span>
+                                        ${
+                                            isYou
+                                            ? `</div>`
+                                            : `</a>`
+                                        }
+                                    </div>`
+                                : ''
+                            }
+                            <p class="detail-feedback-content">
+                                ${ value.description || '' }
+                            </p>
+                            <span class="detail-feedback-time">${ timeSince(new Date(value.created_at)) } ago</span>
+                        </div>
                     </li>`
                 );
 

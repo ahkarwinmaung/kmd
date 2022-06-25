@@ -61,10 +61,12 @@
 
 
                 <!-- Description -->
-                <div class="detail-desc card-box">
+                <div id="description" class="detail-desc card-box">
                     <div class="detail-desc-header">
-                        <span uk-icon="icon: bolt; ratio: 1.2;"></span>
-                        <h3 class="card-title">Description</h3>
+                        <a href="#description" class="section-anchors">
+                            <span uk-icon="icon: bolt; ratio: 1.2;"></span>
+                            <h3 class="card-title">Description</h3>
+                        </a>
                     </div>
 
                     <div class="detail-desc-body">
@@ -76,10 +78,12 @@
 
                 
                 <!-- Episodes -->
-                <div class="detail-eps card-box" uk-filter="target: .detail-eps-filter;">
+                <div id="latest-manga-release" class="detail-eps card-box" uk-filter="target: .detail-eps-filter;">
                     <div class="detail-eps-header">
-                        <span uk-icon="icon: file-text; ratio: 1.2;"></span>
-                        <h3 class="card-title">Latest Manga Release</h3>
+                        <a href="#latest-manga-release" class="section-anchors">
+                            <span uk-icon="icon: file-text; ratio: 1.2;"></span>
+                            <h3 class="card-title">Latest Manga Release</h3>
+                        </a>
                         <button class="detail-eps-sorting default-button asc">
                             <span class="sorting-icon" uk-icon="icon: triangle-down; ratio: 1.3;"></span>
                             <span class="sorting-text-static">SC</span>
@@ -102,10 +106,12 @@
 
 
                 <!-- Feedbacks -->
-                <div class="detail-feedback card-box">
+                <div id="comments" class="detail-feedback card-box">
                     <div class="detail-feedback-header">
-                        <span uk-icon="icon: comments; ratio: 1.2;"></span>
-                        <h3 class="card-title">Feedbacks</h3>
+                        <a href="#comments" class="section-anchors">
+                            <span uk-icon="icon: comments; ratio: 1.2;"></span>
+                            <h3 class="card-title">Comments</h3>
+                        </a>
                     </div>
 
                     <ul class="detail-feedback-list">
@@ -114,10 +120,10 @@
 
                     <div class="detail-feedback-post">
                         <form class="detail-feedback-form">
-                            <label for="detail-feedback-input">Leave your feedback here</label>
+                            <label for="detail-feedback-input">Leave your comment here</label>
                             <div>
                                 <textarea id="detail-feedback-input" placeholder="Lorem ipsum dolor sit, amet consectetur adipisicing elit ..."></textarea>
-                                <div class="feedback-error-message">Please fill your feedback</div>
+                                <div class="feedback-error-message">Enter your comment</div>
                             </div>
                             <button type="submit">Submit</button>
                         </form>
@@ -126,7 +132,7 @@
 
                     <div class="detail-feedback-not-user">
                         <p>
-                            You can also submit feedback after <button class="show-login-modal">Login</button>.
+                            You can also comment after <button class="show-login-modal">Login</button>.
                         </p>
                     </div>
                 </div>
