@@ -222,6 +222,9 @@ class DetailController  {
                 let isOwner = this.store.loginUser && this.store.loginUser.id === value.user_id;
                 let feedbackUserData = [...this.store.feedbacksUsers].find(fu => fu.id === value.user_id);
 
+                let childFeedbacks = [...this.store.feedbacks].filter(f => f.parent_id === value.id);
+                console.log( 'childFeedbacks -', childFeedbacks );
+
                 let $feedback = $(
                     `<li data-id="${ value.id }">
                         <div class="detail-feedback-legend">
@@ -249,8 +252,14 @@ class DetailController  {
                                     ${ value.description || '' }
                                 </p>
                                 <div class="detail-feedback-footer">
-                                    <span class="detail-feedback-time">${ timeSinceSingle(new Date(value.created_at)) }</span>
-                                    ${ this.store.loginUser && false ? `<button class="detail-feedback-reply" data-id="${ value.id }">Reply</button>` : '' }
+                                    <span class="detail-feedback-time" data-id="${ value.id }">${ timeSinceSingle(new Date(value.created_at)) }</span>
+                                    ${
+                                        new Date(value.updated_at) > new Date(value.created_at)
+                                        ?
+                                            `<span class="detail-feedback-is-edited" data-id="${ value.id }">Edited</span>`
+                                        : ''
+                                    }
+                                    ${ this.store.loginUser ? `<button class="detail-feedback-reply" data-id="${ value.id }">Reply</button>` : '' }
                                     ${
                                         isOwner
                                         ?
@@ -260,12 +269,75 @@ class DetailController  {
                                         : ''
                                     }
                                 </div>
+                                ${ // bind replies
+                                    childFeedbacks && childFeedbacks.length
+                                    ?
+                                        `<ul class="detail-feedback-child">
+                                            ${
+                                                childFeedbacks.map((childValue, childIndex) => {
+                                                    let isChildOwner = this.store.loginUser && this.store.loginUser.id === childValue.user_id;
+                                                    let feedbackChildUserData = [...this.store.feedbacksUsers].find(fu => fu.id === childValue.user_id);
+
+                                                    let child = 
+                                                        `<li>
+                                                            <div class="detail-feedback-legend">
+                                                                ${
+                                                                    feedbackChildUserData
+                                                                    ?
+                                                                        `<div class="detail-feedback-legend-title">
+                                                                            ${
+                                                                                isChildOwner
+                                                                                ? `<div>`
+                                                                                : `<a href="mailto:${ feedbackChildUserData.email }" target="_blank">`
+                                                                            }
+                                                                            <div data-src="${ !isEmpty(feedbackChildUserData.image) ? feedbackChildUserData.image : 'public/ahkar/images/default-profile.png' }" uk-img></div>
+                                                                            <span>${ feedbackChildUserData.name }${ isChildOwner ? ' (You)' : '' }</span>
+                                                                            ${
+                                                                                isChildOwner
+                                                                                ? `</div>`
+                                                                                : `</a>`
+                                                                            }
+                                                                        </div>`
+                                                                    : ''
+                                                                }
+                                                                <div class="detail-feedback-legend-inner">
+                                                                    <p class="detail-feedback-content" data-id="${ childValue.id }">
+                                                                        ${ childValue.description || '' }
+                                                                    </p>
+                                                                    <div class="detail-feedback-footer">
+                                                                        <span class="detail-feedback-time" data-id="${ childValue.id }">${ timeSinceSingle(new Date(childValue.created_at)) }</span>
+                                                                        ${
+                                                                            new Date(childValue.updated_at) > new Date(childValue.created_at)
+                                                                            ?
+                                                                                `<span class="detail-feedback-is-edited" data-id="${ childValue.id }">Edited</span>`
+                                                                            : ''
+                                                                        }
+                                                                        ${ this.store.loginUser ? `<button class="detail-feedback-reply" data-id="${ value.id }">Reply</button>` : '' }
+                                                                        ${
+                                                                            isChildOwner
+                                                                            ?
+                                                                                `<button class="detail-feedback-edit" data-id="${ childValue.id }">
+                                                                                    Edit
+                                                                                </button>`
+                                                                            : ''
+                                                                        }
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </li>`;
+                                                    return child;
+                                                }).join('')
+                                            }
+                                        </ul>`
+                                    : ''
+                                }
                             </div>
                         </div>
                     </li>`
                 );
 
-                $feedback.appendTo( $wrapper );
+                // bind if not a child
+                if ( !value.parent_id )   $feedback.appendTo( $wrapper );
             });
         } else  { // without feedbacks
             $wrapper.hide(); // hide the feedbacks list
@@ -317,12 +389,18 @@ class DetailController  {
                 this.store.feedbacks[updateIndex].description = newDescription;
                 this.store.feedbacks[updateIndex].updated_at = newUpdatedAt;
 
-                // update UI
+                // ? update UI
                 let $feedbackContent = $(`.detail-feedback-content[data-id="${id}"]`);
                 if ( $feedbackContent && $feedbackContent.length )  $feedbackContent.text(newDescription).show();
 
                 let $editWrap = $(`.detail-feedback-edit-wrap[data-id="${id}"]`);
                 if ( $editWrap && $editWrap.length )  $editWrap.remove();
+
+                let $isEdited = $(`.detail-feedback-is-edited[data-id="${id}"]`);
+                if ( !$isEdited || !$isEdited.length )   {
+                    let $time = $(`.detail-feedback-time[data-id="${id}"]`);
+                    if ( $time && $time.length )    $time.after(`<span class="detail-feedback-is-edited" data-id="${ id }">Edited</span>`);
+                }
             }
         } else  { // no val -> just focus
             let $editInput = $(`.detail-feedback-edit-wrap[data-id="${id}"]`).find('textarea');
