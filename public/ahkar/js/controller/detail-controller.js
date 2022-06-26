@@ -247,7 +247,7 @@ class DetailController  {
                                     </div>`
                                 : ''
                             }
-                            <div class="detail-feedback-legend-inner">
+                            <div class="detail-feedback-legend-inner parent-legend-inner" data-id="${ value.id }">
                                 <p class="detail-feedback-content" data-id="${ value.id }">
                                     ${ value.description || '' }
                                 </p>
@@ -300,7 +300,7 @@ class DetailController  {
                                                                         </div>`
                                                                     : ''
                                                                 }
-                                                                <div class="detail-feedback-legend-inner">
+                                                                <div class="detail-feedback-legend-inner" data-id="${ value.id }">
                                                                     <p class="detail-feedback-content" data-id="${ childValue.id }">
                                                                         ${ childValue.description || '' }
                                                                     </p>
@@ -360,11 +360,11 @@ class DetailController  {
                         </div>
                     </div>`
                 );
-            } else  { // just focus
-                let $editInput = $(`.detail-feedback-edit-wrap[data-id="${id}"]`).find('textarea');
-                let $editVal = $editInput.val();
-                $editInput.focus().val('').val($editVal);
             }
+
+            let $editInput = $(`.detail-feedback-edit-wrap[data-id="${id}"]`).find('textarea');
+            let $editVal = $editInput.val();
+            $editInput.focus().val('').val($editVal);
         }
     } // feedbackEdit() <-
 
@@ -423,6 +423,68 @@ class DetailController  {
     } // feedbackEditCancel() <-
 
 
+    feedbackReply(id)     {
+        if ( !id )   return false;
+
+        let $parentLegendInner = $(`.detail-feedback-legend-inner.parent-legend-inner[data-id="${id}"]`);
+        if ( $parentLegendInner && $parentLegendInner.length && $parentLegendInner.length === 1 )    { // prevent error
+            if ( !$(`.detail-feedback-reply-wrap[data-id="${id}"]`).length )   { // prevent duplicate
+                $parentLegendInner.append(
+                    `<div class="detail-feedback-reply-wrap" data-id="${ id }">
+                        <label>Reply:</label>
+                        <textarea maxlength="500"></textarea>
+                        <div>
+                            <button class="detail-feedback-reply-save" data-id="${ id }">Reply</button>
+                            <button class="detail-feedback-reply-cancel" data-id="${ id }">Cancel</button>
+                        </div>
+                    </div>`
+                );
+            }
+
+            let $replyInput = $(`.detail-feedback-reply-wrap[data-id="${id}"]`).find('textarea');
+            let $replyVal = $replyInput.val();
+            $replyInput.focus().val('').val($replyVal);
+        }
+    } // feedbackReply() <-
+
+
+    feedbackReplySave(id)     {
+        if ( !id )   return false;
+
+        let $replyInput = $(`.detail-feedback-reply-wrap[data-id="${id}"]`).find('textarea');
+        if ( $replyInput && $replyInput.val() && $replyInput.val().trim() )    {
+            let newDescription = replaceHTML($replyInput.val().trim());
+
+            let addFeedbackResult = this.libs.feedbacks.addNew([
+                [ 'description', newDescription ],
+                [ 'user_id', this.store.loginUser.id ],
+                [ 'manga_id', this.store.mangaData.id ],
+                [ 'parent_id', id ],
+            ]);
+            console.log( 'feedbackReplySave() -> addFeedbackResult -', addFeedbackResult );
+
+            if ( addFeedbackResult && addFeedbackResult.status === 'success' && addFeedbackResult.Id )   { // success
+                let newFeedbackResult = this.libs.feedbacks.getAnItem( addFeedbackResult.Id ); // get newly added feedback
+                console.log( 'feedbackReplySave() -> newFeedbackResult -', newFeedbackResult );
+
+                if ( newFeedbackResult && newFeedbackResult.results && newFeedbackResult.results.length )   {
+                    this.renderNewFeedback( newFeedbackResult.results[0], true, id );
+                    // push newly added feedback to store
+                    this.store.feedbacks.push( newFeedbackResult.results[0] );
+                }
+            }
+        }
+    } // feedbackReplySave() <-
+
+
+    feedbackReplyCancel(id)    {
+        if ( !id )   return false;
+
+        let $replyWrap = $(`.detail-feedback-reply-wrap[data-id="${id}"]`);
+        if ( $replyWrap && $replyWrap.length )  $replyWrap.remove();
+    } // feedbackReplyCancel() <-
+
+
     submitFeedback(feedback)    {
         if ( !feedback || !this.store.loginUser )    return false;
 
@@ -466,13 +528,13 @@ class DetailController  {
                             </div>`
                         : ''
                     }
-                    <div class="detail-feedback-legend-inner">
+                    <div class="detail-feedback-legend-inner ${ !isChild ? 'parent-legend-inner' : '' }" data-id="${ value.id }">
                         <p class="detail-feedback-content" data-id="${ value.id }">
                             ${ value.description || '' }
                         </p>
                         <div class="detail-feedback-footer">
                             <span class="detail-feedback-time time-since-single" data-time="${ value.created_at }" data-id="${ value.id }">${ timeSinceSingle(new Date(value.created_at)) }</span>
-                            ${ this.store.loginUser ? `<button class="detail-feedback-reply" data-id="${ value.id }">Reply</button>` : '' }
+                            ${ this.store.loginUser ? `<button class="detail-feedback-reply" data-id="${ isChild ? parentID : value.id }">Reply</button>` : '' }
                             <button class="detail-feedback-edit" data-id="${ value.id }">
                                 Edit
                             </button>
@@ -491,7 +553,9 @@ class DetailController  {
                 if ( $parentLegend && $parentLegend.length )   $parentLegend.find('.detail-feedback-legend-inner').append( $childWrap ); // append to parent legend inner
             }
             $childWrap.append( $newFeedback );
-            // TODO - (to remove the respective reply section)
+            // remove reply section
+            let $replyWrap = $(`.detail-feedback-reply-wrap[data-id="${parentID}"]`);
+            if ( $replyWrap && $replyWrap.length )  $replyWrap.remove();
         } else  {
             $newFeedback.appendTo('.detail-feedback-list');
             $('#detail-feedback-input').val('');
@@ -551,6 +615,7 @@ $(document).ready(function()    {
 
 
     // ? feedback actions
+    //* EDIT */
     // edit click
     $(document).on('click', '.detail-feedback-edit', function()     {
         let id = +$(this).data('id');
@@ -572,6 +637,30 @@ $(document).ready(function()    {
         let id = +$(this).data('id');
         if ( id && !isNaN(id) && +id )   detailController.feedbackEditCancel(+id);
     });
+
+    //* REPLY */
+    // reply click
+    $(document).on('click', '.detail-feedback-reply', function()     {
+        let id = +$(this).data('id');
+        if ( id && !isNaN(id) && +id )   detailController.feedbackReply(+id);
+    });
+    // reply keyup
+    $(document).on('keyup', '.detail-feedback-reply-wrap textarea', function()     {
+        let $replySave = $('.detail-feedback-reply-save');
+        if ( $(this).val().trim() )   $replySave.removeClass('save-disabled');
+        else    $replySave.addClass('save-disabled');
+    });
+    // reply save
+    $(document).on('click', '.detail-feedback-reply-save:not(.save-disabled)', function()     {
+        let id = +$(this).data('id');
+        if ( id && !isNaN(id) && +id )   detailController.feedbackReplySave(+id);
+    });
+    // reply cancel
+    $(document).on('click', '.detail-feedback-reply-cancel', function()     {
+        let id = +$(this).data('id');
+        if ( id && !isNaN(id) && +id )   detailController.feedbackReplyCancel(+id);
+    });
+
 
 
     // ? feedback form
