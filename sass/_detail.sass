@@ -260,7 +260,22 @@ body.detail
                 &-inner
                     padding-left: 55px
             &-content
-                margin: 0 0 5px
+                margin: 0 0 10px
+                &-mention
+                    display: inline-block
+                    height: 20px
+                    line-height: 20px
+                    font-size: 14px
+                    padding: 0 8px
+                    background: #e6e6e6
+                    +border-radius(20px)
+                    // &.mentioned-me
+                    //     color: $white
+                    //     background: $text-black
+                    //     span
+                    //         color: $primary-color
+                    span // user name
+                        color: $primary-color
             &-footer
                 display: flex
                 align-items: center
@@ -318,19 +333,31 @@ body.detail
 
             // reply
             &-reply-wrap
+                position: relative
                 padding: 0 0 10px
                 margin: 20px 0 0
                 label
-                    display: block
+                    display: flex
+                    align-items: center
                     font-size: 14px
-                    text-transform: uppercase
-                    letter-spacing: .1em
-                    margin: 0 0 5px
+                    margin: 0 0 8px
+                    span:not(.detail-feedback-reply-owner-name)
+                        letter-spacing: .1em
+                        text-transform: uppercase
+                        margin-right: 5px
+                    .detail-feedback-reply-owner-name
+                        height: 20px
+                        line-height: 20px
+                        padding: 0 8px
+                        color: $primary-color
+                        background: #e6e6e6
+                        +border-radius(20px)
                 textarea
                     min-width: 100%
                     max-width: 100%
                     min-height: 100px
                     max-height: 200px
+                    line-height: 20px
                     font-weight: 400
                     padding: 15px 10px
                     border: 1px solid rgba(0, 0, 0, .2)
@@ -341,6 +368,17 @@ body.detail
                     button
                         font-size: 14px
                         font-weight: 500
+            // &-reply-mention
+            //     position: absolute
+            //     top: 40px
+            //     left: 10px
+            //     height: 20px
+            //     line-height: 20px
+            //     font-size: 14px
+            //     padding: 0 8px
+            //     color: $primary-color
+            //     background: #e6e6e6
+            //     +border-radius(20px)
             &-reply-save
                 color: $white
                 background: $primary-color

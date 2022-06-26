@@ -259,7 +259,7 @@ class DetailController  {
                                             `<span class="detail-feedback-is-edited" data-id="${ value.id }">Edited</span>`
                                         : ''
                                     }
-                                    ${ this.store.loginUser ? `<button class="detail-feedback-reply" data-id="${ value.id }">Reply</button>` : '' }
+                                    ${ this.store.loginUser ? `<button class="detail-feedback-reply" data-id="${ value.id }" data-owner-id="${ value.user_id }">Reply</button>` : '' }
                                     ${
                                         isOwner
                                         ?
@@ -277,6 +277,8 @@ class DetailController  {
                                                 childFeedbacks.map((childValue, childIndex) => {
                                                     let isChildOwner = this.store.loginUser && this.store.loginUser.id === childValue.user_id;
                                                     let feedbackChildUserData = [...this.store.feedbacksUsers].find(fu => fu.id === childValue.user_id);
+
+                                                    let mentionedDescription = this.getMentionedText( childValue.description );
 
                                                     let child = 
                                                         `<li data-id="${ childValue.id }">
@@ -302,7 +304,7 @@ class DetailController  {
                                                                 }
                                                                 <div class="detail-feedback-legend-inner" data-id="${ value.id }">
                                                                     <p class="detail-feedback-content" data-id="${ childValue.id }">
-                                                                        ${ childValue.description || '' }
+                                                                        ${ mentionedDescription || '' }
                                                                     </p>
                                                                     <div class="detail-feedback-footer">
                                                                         <span class="detail-feedback-time time-since-single" data-time="${ childValue.created_at }" data-id="${ childValue.id }">${ timeSinceSingle(new Date(childValue.created_at)) }</span>
@@ -312,7 +314,7 @@ class DetailController  {
                                                                                 `<span class="detail-feedback-is-edited" data-id="${ childValue.id }">Edited</span>`
                                                                             : ''
                                                                         }
-                                                                        ${ this.store.loginUser ? `<button class="detail-feedback-reply" data-id="${ value.id }">Reply</button>` : '' }
+                                                                        ${ this.store.loginUser ? `<button class="detail-feedback-reply" data-id="${ value.id }" data-owner-id="${ childValue.user_id }">Reply</button>` : '' }
                                                                         ${
                                                                             isChildOwner
                                                                             ?
@@ -343,6 +345,24 @@ class DetailController  {
             $wrapper.hide(); // hide the feedbacks list
         }
     } // renderFeedbacks() <-
+
+
+    getMentionedText(str)  {
+        let matches = str.match(/\{{(.*?)\}}/);
+        if ( matches )     {
+            let owner_id = matches[1];
+            let ownderData = [...this.store.feedbacksUsers].find(f => f.id === +owner_id);
+
+            let isOwner = ownderData.id === this.store.loginUser.id;
+
+            return str.replace(
+                /\{{(.*?)\}}/, 
+                `<span class="detail-feedback-content-mention ${isOwner ? 'mentioned-me' : ''}">Replied to: <span>${ isOwner ? 'You' : ownderData.name }</span></span> `
+            );
+        }
+
+        return str;
+    } // getMentionedText () <-
 
 
     feedbackEdit(id)     {
@@ -423,27 +443,33 @@ class DetailController  {
     } // feedbackEditCancel() <-
 
 
-    feedbackReply(id)     {
-        if ( !id )   return false;
+    feedbackReply(id, owner_id)     {
+        if ( !id || !owner_id )   return false;
+
+        let ownderData = [...this.store.feedbacksUsers].find(f => f.id === owner_id);
 
         let $parentLegendInner = $(`.detail-feedback-legend-inner.parent-legend-inner[data-id="${id}"]`);
         if ( $parentLegendInner && $parentLegendInner.length && $parentLegendInner.length === 1 )    { // prevent error
             if ( !$(`.detail-feedback-reply-wrap[data-id="${id}"]`).length )   { // prevent duplicate
                 $parentLegendInner.append(
                     `<div class="detail-feedback-reply-wrap" data-id="${ id }">
-                        <label>Reply:</label>
+                        <label><span>Reply To:</span> <span class="detail-feedback-reply-owner-name" data-id="${ id }" data-owner-id="${ owner_id }">${ ownderData.name }</span></label>
                         <textarea maxlength="500"></textarea>
                         <div>
-                            <button class="detail-feedback-reply-save" data-id="${ id }">Reply</button>
+                            <button class="detail-feedback-reply-save" data-id="${ id }" data-owner-id="${ owner_id }">Reply</button>
                             <button class="detail-feedback-reply-cancel" data-id="${ id }">Cancel</button>
                         </div>
                     </div>`
                 );
+            } else  { // if already exist -> update owner
+                $(`.detail-feedback-reply-wrap[data-id="${id}"]`).find('.detail-feedback-reply-owner-name').attr('data-owner-id', owner_id).text( ownderData.name );
             }
 
             let $replyInput = $(`.detail-feedback-reply-wrap[data-id="${id}"]`).find('textarea');
             let $replyVal = $replyInput.val();
             $replyInput.focus().val('').val($replyVal);
+
+            // this.mentionUserToReply(id, owner_id);
         }
     } // feedbackReply() <-
 
@@ -454,6 +480,12 @@ class DetailController  {
         let $replyInput = $(`.detail-feedback-reply-wrap[data-id="${id}"]`).find('textarea');
         if ( $replyInput && $replyInput.val() && $replyInput.val().trim() )    {
             let newDescription = replaceHTML($replyInput.val().trim());
+
+            let owner_id = null;
+            let $ownerName = $(`.detail-feedback-reply-owner-name[data-id="${id}"]`);
+            if ( $ownerName && $ownerName.length && +$ownerName.data('owner-id') )  owner_id = +$ownerName.data('owner-id');
+
+            if ( owner_id )     newDescription = `{{${owner_id}}}${newDescription}`;
 
             let addFeedbackResult = this.libs.feedbacks.addNew([
                 [ 'description', newDescription ],
@@ -485,6 +517,34 @@ class DetailController  {
     } // feedbackReplyCancel() <-
 
 
+    // mentionUserToReply(id, owner_id)    {
+    //     if ( !id || !owner_id )  return false;
+        
+    //     let ownderData = [...this.store.feedbacksUsers].find(f => f.id === owner_id);
+    //     console.log( 'mentionUserToReply() -> ownderData -', ownderData );
+
+    //     if ( ownderData && ownderData.name )   {
+    //         let $replyWrap = $(`.detail-feedback-reply-wrap[data-id="${id}"]`);
+    //         if ( $replyWrap && $replyWrap.length )   { // prevent error
+    //             let $existingMention = $(`.detail-feedback-reply-mention[data-id="${id}"]`);
+    //             if ( $existingMention && $existingMention.length )   { // if alr exist -> remove to prevent duplicate
+    //                 $existingMention.remove();
+    //             }
+
+    //             // append mention
+    //             let $mention = $( `<span class="detail-feedback-reply-mention" data-id="${ id }" data-owner-id="${ owner_id }">${ ownderData.name }</span>` );
+    //             $mention.appendTo( $replyWrap );
+
+    //             let mentionWidth = $mention.outerWidth();
+    //             console.log( 'mentionWidth -', mentionWidth );
+                
+    //             let $replyInput = $replyWrap.find('textarea');
+    //             $replyInput.css('text-indent', mentionWidth + 5);
+    //         }
+    //     }
+    // } // mentionUserToReply() <-
+
+
     submitFeedback(feedback)    {
         if ( !feedback || !this.store.loginUser )    return false;
 
@@ -514,6 +574,8 @@ class DetailController  {
 
         let feedbackUserData = this.store.loginUser;
 
+        let mentionedDescription = isChild ? this.getMentionedText( value.description ) : value.description;
+
         let $newFeedback = $(
             `<li data-id="${ value.id }">
                 <div class="detail-feedback-legend" data-id="${ value.id }">
@@ -530,11 +592,11 @@ class DetailController  {
                     }
                     <div class="detail-feedback-legend-inner ${ !isChild ? 'parent-legend-inner' : '' }" data-id="${ value.id }">
                         <p class="detail-feedback-content" data-id="${ value.id }">
-                            ${ value.description || '' }
+                            ${ mentionedDescription || '' }
                         </p>
                         <div class="detail-feedback-footer">
                             <span class="detail-feedback-time time-since-single" data-time="${ value.created_at }" data-id="${ value.id }">${ timeSinceSingle(new Date(value.created_at)) }</span>
-                            ${ this.store.loginUser ? `<button class="detail-feedback-reply" data-id="${ isChild ? parentID : value.id }">Reply</button>` : '' }
+                            ${ this.store.loginUser ? `<button class="detail-feedback-reply" data-id="${ isChild ? parentID : value.id }" data-owner-id="${ value.user_id }">Reply</button>` : '' }
                             <button class="detail-feedback-edit" data-id="${ value.id }">
                                 Edit
                             </button>
@@ -618,7 +680,7 @@ $(document).ready(function()    {
     //* EDIT */
     // edit click
     $(document).on('click', '.detail-feedback-edit', function()     {
-        let id = +$(this).data('id');
+        let id = $(this).data('id');
         if ( id && !isNaN(id) && +id )   detailController.feedbackEdit(+id);
     });
     // edit keyup
@@ -629,20 +691,21 @@ $(document).ready(function()    {
     });
     // edit save
     $(document).on('click', '.detail-feedback-edit-save:not(.save-disabled)', function()     {
-        let id = +$(this).data('id');
+        let id = $(this).data('id');
         if ( id && !isNaN(id) && +id )   detailController.feedbackEditSave(+id);
     });
     // edit cancel
     $(document).on('click', '.detail-feedback-edit-cancel', function()     {
-        let id = +$(this).data('id');
+        let id = $(this).data('id');
         if ( id && !isNaN(id) && +id )   detailController.feedbackEditCancel(+id);
     });
 
     //* REPLY */
     // reply click
     $(document).on('click', '.detail-feedback-reply', function()     {
-        let id = +$(this).data('id');
-        if ( id && !isNaN(id) && +id )   detailController.feedbackReply(+id);
+        let id = $(this).data('id');
+        let owner_id = $(this).data('owner-id');
+        if ( (id && !isNaN(id) && +id) && (owner_id && !isNaN(owner_id) && +owner_id) )   detailController.feedbackReply(+id, +owner_id);
     });
     // reply keyup
     $(document).on('keyup', '.detail-feedback-reply-wrap textarea', function()     {
@@ -652,12 +715,12 @@ $(document).ready(function()    {
     });
     // reply save
     $(document).on('click', '.detail-feedback-reply-save:not(.save-disabled)', function()     {
-        let id = +$(this).data('id');
+        let id = $(this).data('id');
         if ( id && !isNaN(id) && +id )   detailController.feedbackReplySave(+id);
     });
     // reply cancel
     $(document).on('click', '.detail-feedback-reply-cancel', function()     {
-        let id = +$(this).data('id');
+        let id = $(this).data('id');
         if ( id && !isNaN(id) && +id )   detailController.feedbackReplyCancel(+id);
     });
 
