@@ -1,4 +1,27 @@
 
+// less - more
+.less-more-content
+    .more-content
+        display: none
+    .show-more, .show-less
+        display: inline-flex
+        align-items: center
+        color: $primary-color
+        text-transform: uppercase
+        &::after
+            content: ''
+            width: 0
+            height: 0
+            margin-left: 4px
+            border-top: 6px solid $primary-color
+            border-left: 4px solid transparent
+            border-right: 4px solid transparent
+    .show-less
+        &::after
+            transform: rotate(180deg)
+
+
+// others
 .body-content
     padding: 100px 0
 

@@ -71,7 +71,7 @@
                         </a>
                     </div>
 
-                    <div class="detail-desc-body">
+                    <div class="detail-desc-body less-more-content">
                         <!-- js -->
                     </div>
                 </div>

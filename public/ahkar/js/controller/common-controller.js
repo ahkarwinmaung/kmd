@@ -123,6 +123,20 @@ $(document).ready(function()    {
         globalCommonController.refreshAllTimeSince();
     }, 10000);
 
+
+    // less - more
+    $(document).on('click', '.less-more-content .show-more', function()  {
+        let $wrapper = $('.less-more-content');
+        $wrapper.find('.less-content').hide();
+        $wrapper.find('.more-content').show();
+    });
+    $(document).on('click', '.less-more-content .show-less', function()  {
+        let $wrapper = $('.less-more-content');
+        $wrapper.find('.more-content').hide();
+        $wrapper.find('.less-content').show();
+    });
+
+
     // show login modal buttons click
     $(document).on('click', '.show-login-modal', function()  {
         globalCommonController.showLoginModal();

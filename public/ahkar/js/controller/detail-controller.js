@@ -113,7 +113,23 @@ class DetailController  {
                     `);
 
                     // ? description
-                    $('.detail-desc-body').html( mangaData.description );
+                    $('.detail-desc-body').html(_ => {
+                        let description = mangaData.description || '';
+                        if ( description && description.length > 250 )    {
+                            let moreLess = 
+                                `<p class="less-content">
+                                    ${ description.substring(0, 250) } ...
+                                    <button class="show-more">More</button>
+                                </p>
+                                <p class="more-content">
+                                    ${ description }
+                                    <button class="show-less">Less</button>
+                                </p>`
+                            return moreLess;
+                        }
+
+                        return description;
+                    });
 
                     // ? episodes
                     // store episodes data
@@ -194,12 +210,6 @@ class DetailController  {
             $('.detail-eps').hide(); // hide the episodes section
         };
     } // renderEpisodes() <-
-
-
-    noResult()  {
-        $('.detail-wrap').hide(); // hide all section
-        $('.detail-no-result').show(); // show no result section
-    } // noResult() <-
 
 
     renderFeedbacks(feedbacks)   {
@@ -453,8 +463,8 @@ class DetailController  {
             $editInput.focus().val('').val($editVal);
         }
     } // feedbackEditSave() <-
-    
-    
+
+
     feedbackEditCancel(id)    {
         if ( !id )   return false;
 
@@ -494,8 +504,6 @@ class DetailController  {
             let $replyInput = $(`.detail-feedback-reply-wrap[data-id="${id}"]`).find('textarea');
             let $replyVal = $replyInput.val();
             $replyInput.focus().val('').val($replyVal);
-
-            // this.mentionUserToReply(id, owner_id);
         }
     } // feedbackReply() <-
 
@@ -541,34 +549,6 @@ class DetailController  {
         let $replyWrap = $(`.detail-feedback-reply-wrap[data-id="${id}"]`);
         if ( $replyWrap && $replyWrap.length )  $replyWrap.remove();
     } // feedbackReplyCancel() <-
-
-
-    // mentionUserToReply(id, owner_id)    {
-    //     if ( !id || !owner_id )  return false;
-        
-    //     let ownderData = [...this.store.feedbacksUsers].find(f => f.id === owner_id);
-    //     console.log( 'mentionUserToReply() -> ownderData -', ownderData );
-
-    //     if ( ownderData && ownderData.name )   {
-    //         let $replyWrap = $(`.detail-feedback-reply-wrap[data-id="${id}"]`);
-    //         if ( $replyWrap && $replyWrap.length )   { // prevent error
-    //             let $existingMention = $(`.detail-feedback-reply-mention[data-id="${id}"]`);
-    //             if ( $existingMention && $existingMention.length )   { // if alr exist -> remove to prevent duplicate
-    //                 $existingMention.remove();
-    //             }
-
-    //             // append mention
-    //             let $mention = $( `<span class="detail-feedback-reply-mention" data-id="${ id }" data-owner-id="${ owner_id }">${ ownderData.name }</span>` );
-    //             $mention.appendTo( $replyWrap );
-
-    //             let mentionWidth = $mention.outerWidth();
-    //             console.log( 'mentionWidth -', mentionWidth );
-                
-    //             let $replyInput = $replyWrap.find('textarea');
-    //             $replyInput.css('text-indent', mentionWidth + 5);
-    //         }
-    //     }
-    // } // mentionUserToReply() <-
 
 
     submitFeedback(feedback)    {
@@ -667,6 +647,12 @@ class DetailController  {
             $legend.removeClass('highlight-legend');
         }
     } // highlightFeedbackLegend() <-
+
+
+    noResult()  {
+        $('.detail-wrap').hide(); // hide all section
+        $('.detail-no-result').show(); // show no result section
+    } // noResult() <-
 
 }
 
