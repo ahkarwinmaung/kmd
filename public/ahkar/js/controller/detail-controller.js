@@ -28,7 +28,7 @@ class DetailController  {
         return new Promise((resolve, reject) => {
             try {
                 let mangaResult = this.libs.mangas.getData({
-                    queryFilter: `(id eq ${id}) and (publish_status eq 'true')`,
+                    queryFilter: `(id eq ${id}) and (publish_status eq 1)`,
                     queryLimit: 1,
                 });
                 console.log( 'storeMangaData() -> mangaResult -', mangaResult );

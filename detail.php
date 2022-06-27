@@ -65,9 +65,7 @@
                     <div class="detail-desc-header">
                         <a href="#description" class="section-anchors">
                             <span uk-icon="icon: bolt; ratio: 1.2;"></span>
-                            <h3 class="card-title">
-                                js
-                            </h3>
+                            <h3 class="card-title">Description</h3>
                         </a>
                     </div>
 

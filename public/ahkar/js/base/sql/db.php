@@ -13,7 +13,7 @@ header('Access-Control-Max-Age: 1000');
 header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
 
 $db = array(
-	'name' => 'manga',
+	'name' => 'msmanga',
 	'user' => 'root',
 	'pass' => 'root',
 );

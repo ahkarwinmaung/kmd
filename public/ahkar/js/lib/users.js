@@ -3,7 +3,7 @@ class Users {
     constructor() {
         this.spDbLib = new sprLibPhp();
 
-        this.listName = 'users';
+        this.listName = 'auths';
     }
 
 
