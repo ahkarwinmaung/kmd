@@ -173,7 +173,7 @@ class DetailController  {
                                 ${
                                     this.store.loginUser || !index
                                     ?
-                                        `<a href="read.html?id=${ value.id }">
+                                        `<a href="read.php?id=${ value.id }">
                                             <span>Read</span>
                                             <span uk-icon="chevron-right"></span>
                                         </a>`
@@ -355,11 +355,13 @@ class DetailController  {
             let owner_id = matches[1];
             let ownderData = [...this.store.feedbacksUsers].find(f => f.id === +owner_id);
 
-            let isOwner = ownderData.id === this.store.loginUser.id;
+            let isOwner = this.store.loginUser && ownderData.id === this.store.loginUser.id;
 
             return str.replace(
                 /\{{(.*?)\}}/, 
-                `<span class="detail-feedback-content-mention ${isOwner ? 'mentioned-me' : ''}">Replied to: <span>${ isOwner ? 'You' : ownderData.name }</span></span> `
+                `<span class="detail-feedback-content-mention ${isOwner ? 'mentioned-me' : ''}" data-name="${ ownderData.name }">
+                    Replied to: <span>${ isOwner ? 'You' : ownderData.name }</span>
+                </span> `
             );
         }
 

@@ -36,7 +36,7 @@
 
                 <!-- Header -->
                 <div class="detail-header card-box">
-                    <a class="detail-header-back default-button" href="index.html">
+                    <a class="detail-header-back default-button" href="index.php">
                         <span uk-icon="icon: arrow-left; ratio: 1.5;"></span>
                     </a>
 
@@ -148,7 +148,7 @@
             <div class="not-found detail-no-result card-box">
                 <img src="public/ahkar/images/404.png" alt="404">
                 <h1>The Manga you looking is not found.</h1>
-                <a href="index.html">Back to Homepage</a>
+                <a href="index.php">Back to Homepage</a>
             </div>
 
         </div>

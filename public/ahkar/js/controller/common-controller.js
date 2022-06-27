@@ -69,12 +69,14 @@ class CommonController    {
 
 
     logout()    {
+        // location.href = `logout.php?request-from=${ location.href.split('/').pop().split('#')[0].split('?')[0] }`;
         eraseCookie(this.LOGIN_COOKIE);
         location.reload();
     } // logout() <-
 
 
     showLoginModal()    {
+        // location.href = `login.php?request-from=${ location.href.split('/').pop().split('#')[0].split('?')[0] }`;
         if ( $('#login-modal.uk-modal').length )   UIkit.modal('#login-modal').show();
     } // showLoginModal() <-
 
