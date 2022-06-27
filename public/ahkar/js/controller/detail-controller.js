@@ -341,8 +341,10 @@ class DetailController  {
                 // bind if not a child
                 if ( !value.parent_id )   $feedback.appendTo( $wrapper );
             });
+
+            $wrapper.show();
         } else  { // without feedbacks
-            $wrapper.hide(); // hide the feedbacks list
+            $('.detail-feedback-no-result').show();
         }
     } // renderFeedbacks() <-
 
@@ -446,14 +448,17 @@ class DetailController  {
     feedbackReply(id, owner_id)     {
         if ( !id || !owner_id )   return false;
 
+        if ( !this.store.feedbacksUsers )   this.store.feedbacksUsers = [ this.store.loginUser ]; // prevent error for reply first comment
         let ownderData = [...this.store.feedbacksUsers].find(f => f.id === owner_id);
+
+        let isReplySelf = owner_id === this.store.loginUser.id;
 
         let $parentLegendInner = $(`.detail-feedback-legend-inner.parent-legend-inner[data-id="${id}"]`);
         if ( $parentLegendInner && $parentLegendInner.length && $parentLegendInner.length === 1 )    { // prevent error
             if ( !$(`.detail-feedback-reply-wrap[data-id="${id}"]`).length )   { // prevent duplicate
                 $parentLegendInner.append(
                     `<div class="detail-feedback-reply-wrap" data-id="${ id }">
-                        <label><span>Reply To:</span> <span class="detail-feedback-reply-owner-name" data-id="${ id }" data-owner-id="${ owner_id }">${ ownderData.name }</span></label>
+                        <label><span>Reply To:</span> <span class="detail-feedback-reply-owner-name" data-id="${ id }" data-owner-id="${ owner_id }">${ isReplySelf ? 'yourself' : ownderData.name }</span></label>
                         <textarea maxlength="500"></textarea>
                         <div>
                             <button class="detail-feedback-reply-save" data-id="${ id }" data-owner-id="${ owner_id }">Reply</button>
@@ -462,7 +467,7 @@ class DetailController  {
                     </div>`
                 );
             } else  { // if already exist -> update owner
-                $(`.detail-feedback-reply-wrap[data-id="${id}"]`).find('.detail-feedback-reply-owner-name').attr('data-owner-id', owner_id).text( ownderData.name );
+                $(`.detail-feedback-reply-wrap[data-id="${id}"]`).find('.detail-feedback-reply-owner-name').attr('data-owner-id', owner_id).text( isReplySelf ? 'yourself' : ownderData.name );
             }
 
             let $replyInput = $(`.detail-feedback-reply-wrap[data-id="${id}"]`).find('textarea');
@@ -563,8 +568,9 @@ class DetailController  {
                 this.renderNewFeedback( newFeedbackResult.results[0] );
                 // push newly added feedback to store
                 if ( this.store.feedbacks ) this.store.feedbacks.push( newFeedbackResult.results[0] );
-                else    { // first one
+                else    { // if the first feedback
                     this.store.feedbacks = [ newFeedbackResult.results[0] ];
+                    $('.detail-feedback-no-result').hide();
                     $('.detail-feedback-list').show();
                 }
             }
