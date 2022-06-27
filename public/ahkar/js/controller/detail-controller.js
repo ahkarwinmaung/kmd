@@ -562,7 +562,11 @@ class DetailController  {
             if ( newFeedbackResult && newFeedbackResult.results && newFeedbackResult.results.length )   {
                 this.renderNewFeedback( newFeedbackResult.results[0] );
                 // push newly added feedback to store
-                this.store.feedbacks.push( newFeedbackResult.results[0] );
+                if ( this.store.feedbacks ) this.store.feedbacks.push( newFeedbackResult.results[0] );
+                else    { // first one
+                    this.store.feedbacks = [ newFeedbackResult.results[0] ];
+                    $('.detail-feedback-list').show();
+                }
             }
         }
     } // submitFeedback() <-
@@ -635,7 +639,7 @@ class DetailController  {
             await ahkar.wait(600);
             $legend.removeClass('highlight-legend');
         }
-    }
+    } // highlightFeedbackLegend() <-
 
 }
 

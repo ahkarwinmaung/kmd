@@ -7,7 +7,7 @@ class CommonController    {
             users: new Users(),
         }
         
-        this.LOGIN_COOKIE = 'loginID',
+        this.LOGIN_COOKIE = 'LoginId',
 
         // store
         this.store = {
@@ -69,7 +69,7 @@ class CommonController    {
 
 
     logout()    {
-        eraseCookie('loginID');
+        eraseCookie(this.LOGIN_COOKIE);
         location.reload();
     } // logout() <-
 
