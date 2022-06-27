@@ -375,9 +375,16 @@ class DetailController  {
         let $feedbackContent = $(`.detail-feedback-content[data-id="${id}"]`);
         if ( $feedbackContent && $feedbackContent.length )   { // prevent error
             if ( !$(`.detail-feedback-edit-wrap[data-id="${id}"]`).length )   { // prevent duplicate
+                let feedbackData = [...this.store.feedbacks].find(f => f.id === id);
+
+                let isReply = feedbackData.parent_id && true || false;
+
+                let description = feedbackData.description;
+                let modifiedDescription = isReply ? description.replace( /\{{(.*?)\}}/, '' ) : description;
+
                 $feedbackContent.hide().after(
                     `<div class="detail-feedback-edit-wrap" data-id="${ id }">
-                        <textarea maxlength="500">${ [...this.store.feedbacks].find(f => f.id === id).description }</textarea>
+                        <textarea maxlength="500">${ modifiedDescription }</textarea>
                         <div>
                             <button class="detail-feedback-edit-save" data-id="${ id }">Save</button>
                             <button class="detail-feedback-edit-cancel" data-id="${ id }">Cancel</button>
@@ -398,9 +405,21 @@ class DetailController  {
 
         let $editInput = $(`.detail-feedback-edit-wrap[data-id="${id}"]`).find('textarea');
         if ( $editInput && $editInput.val() && $editInput.val().trim() )   {
+            let feedbackData = [...this.store.feedbacks].find(f => f.id === id);
+
+            let isReply = feedbackData.parent_id && true || false;
+
             let newDescription = replaceHTML($editInput.val().trim());
             let newUpdatedAt = moment().format('YYYY-MM-DD HH:mm:ss');
-            
+
+            if ( isReply )  { // add mention
+                let matches = feedbackData.description.match(/\{{(.*?)\}}/);
+                if ( matches )  {
+                    let match = matches[1];
+                    newDescription = `{{${match}}}` + newDescription;
+                }
+            }
+
             let editUpdateResult = this.libs.feedbacks.updateItem(id, [
                 [ 'description', newDescription ],
                 [ 'updated_at', newUpdatedAt ],
@@ -415,7 +434,7 @@ class DetailController  {
 
                 // ? update UI
                 let $feedbackContent = $(`.detail-feedback-content[data-id="${id}"]`);
-                if ( $feedbackContent && $feedbackContent.length )  $feedbackContent.text(newDescription).show();
+                if ( $feedbackContent && $feedbackContent.length )  $feedbackContent.html( this.getMentionedText(newDescription) ).show();
 
                 let $editWrap = $(`.detail-feedback-edit-wrap[data-id="${id}"]`);
                 if ( $editWrap && $editWrap.length )  $editWrap.remove();
