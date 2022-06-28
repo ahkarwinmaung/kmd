@@ -26,7 +26,7 @@ class ReadController  {
             try {
                 let imagesResult = this.libs.mangaimages.getData({
                     queryFilter: `(episode_id eq ${episode_id})`,
-                    queryOrderby: `created_at desc`,
+                    queryOrderby: `created_at asc`,
                 });
                 console.log( 'storeMangaImages() -> imagesResult -', imagesResult );
 
@@ -94,7 +94,7 @@ class ReadController  {
                     $.each(imagesData, (index, value) => {
                         let $slide = $(
                             `<div class="swiper-slide" data-index="${ index }" data-id="${ value.id }">
-                                <img data-src="${ value.image }" class="swiper-lazy">
+                                <img data-src="${ value.image_path }" class="swiper-lazy">
                                 <div class="swiper-lazy-preloader swiper-lazy-preloader-black"></div>
                             </div>`
                         );

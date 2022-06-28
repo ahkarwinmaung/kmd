@@ -65,9 +65,9 @@ class DetailController  {
                     else    $('.detail-header-title').hide();
 
                     // ? thumbnail
-                    if ( mangaData.thumbnail )   {
+                    if ( mangaData.thumbnail_path )   {
                         $('.detail-item-left').html(
-                            `<img class="detail-item-image" data-src="${ mangaData.thumbnail }" title="${ mangaData.name || '' }" alt="${ mangaData.name || '' }" uk-img>`
+                            `<img class="detail-item-image" data-src="${ mangaData.thumbnail_path }" title="${ mangaData.name || '' }" alt="${ mangaData.name || '' }" uk-img>`
                         );
                     } else  $('.detail-item-left').hide();
 
@@ -349,7 +349,7 @@ class DetailController  {
                 );
 
                 // bind if not a child
-                if ( !value.parent_id )   $feedback.appendTo( $wrapper );
+                if ( !value.parent_id || value.parent_id == 99999 )   $feedback.appendTo( $wrapper );
             });
 
             $wrapper.show();
@@ -558,6 +558,7 @@ class DetailController  {
             [ 'description', replaceHTML(feedback.trim()) ],
             [ 'user_id', this.store.loginUser.id ],
             [ 'manga_id', this.store.mangaData.id ],
+            [ 'parent_id', 99999 ],
         ]);
         console.log( 'submitFeedback() -> addFeedbackResult -', addFeedbackResult );
         

@@ -69,15 +69,21 @@ class CommonController    {
 
 
     logout()    {
-        // location.href = `logout.php?request-from=${ location.href.split('/').pop().split('#')[0].split('?')[0] }`;
-        eraseCookie(this.LOGIN_COOKIE);
-        location.reload();
+        if ( location.origin.includes('localhost:8888') )   { // ahkar
+            eraseCookie(this.LOGIN_COOKIE);
+            location.reload();
+        } else  {
+            location.href = `logout.php?from=${ location.href.split('/').pop() }`;
+        }
     } // logout() <-
 
 
     showLoginModal()    {
-        // location.href = `login.php?request-from=${ location.href.split('/').pop().split('#')[0].split('?')[0] }`;
-        if ( $('#login-modal.uk-modal').length )   UIkit.modal('#login-modal').show();
+        if ( location.origin.includes('localhost:8888') )   { // ahkar
+            if ( $('#login-modal.uk-modal').length )   UIkit.modal('#login-modal').show();
+        } else  {
+            location.href = `login.php?from=${ location.href.split('/').pop() }`;
+        }
     } // showLoginModal() <-
 
 
