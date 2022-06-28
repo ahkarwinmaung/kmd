@@ -650,6 +650,9 @@ class DetailController  {
 
 
     noResult()  {
+        $('title').text(function()     {
+            return $(this).text().replaceAll('{{}}', 'Page not found');
+        });
         $('.detail-wrap').hide(); // hide all section
         $('.detail-no-result').show(); // show no result section
     } // noResult() <-

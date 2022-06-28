@@ -1,0 +1,117 @@
+
+body.read
+    width: 100vw
+    height: 100vh
+    background: $black
+    overflow: hidden
+
+    .body-content
+        padding: 0
+
+    .read // body
+        // &-wrap
+
+        // Header
+        &-header
+            display: flex
+            justify-content: space-between
+            align-items: center
+            width: 100%
+            height: 50px
+            color: $white
+            background: rgba(255, 255, 255, .2)
+            &-left
+                display: flex
+                align-items: center
+            &-back
+                color: $white
+                margin-right: 10px
+                &:hover
+                    color: $black
+            &-title
+                color: $white
+                font-size: 21px
+            &-right
+                display: none
+                font-size: 18px
+                padding-right: 15px
+
+        // List
+        &-list
+            width: 100%
+            height: calc(100vh - 50px)
+            .swiper
+                position: relative
+                width: 100%
+                height: 100%
+                overflow: hidden
+                &-slide
+                    display: flex
+                    justify-content: center
+                    align-items: center
+                    width: 100%
+                    height: 100%
+                    background: $white
+                    img
+                        max-width: calc(100% - 80px)
+                        max-height: 100%
+                &-pagination
+                    display: flex
+                    flex-direction: column
+                    align-items: center
+                    width: 30px
+                    right: 0
+                    padding: 20px 0
+                    background: $black
+                    +border-radius(8px 0 0 8px)
+                    &-bullet
+                        width: 15px
+                        height: 15px
+                        background: $white
+                        opacity: 1
+                        +border-radius(10px)
+                        // +transition-all-ease(.3s)
+                        &:not([class*="active"]):hover
+                            opacity: .8
+                        &-active
+                            height: 40px
+                            // background: $primary-color
+                &-totop
+                    display: none
+                    position: absolute
+                    bottom: 5px
+                    right: 5px
+                    width: 25px
+                    height: 25px
+                    color: $white
+                    background: $black
+                    z-index: 2
+                    +border-radius(4px)
+                    svg polyline
+                        stroke-width: 3
+
+        &-more
+            &-no-result
+                font-size: 18px
+                color: $primary-color
+                font-weight: 500
+                margin: 0 0 50px
+            &-title
+                font-size: 21px
+                font-weight: 600
+                margin: 0 0 30px
+            &-grid
+                max-width: 600px
+            &-links
+                display: block
+            &-thumbnail
+                width: 100%
+                padding-bottom: 150%
+                background-size: cover
+                background-position: center
+                margin: 0 0 10px
+                +border-radius(5px)
+            h4
+                margin: 0 0 5px
+            h4, h5
+                font-weight: 500
