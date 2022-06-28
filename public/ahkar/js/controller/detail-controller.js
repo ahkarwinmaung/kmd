@@ -106,7 +106,7 @@ class DetailController  {
                             ?
                                 `<li>
                                     <span>Release</span>
-                                    <span>${ moment( mangaData.release_date ).format('D MMMM YYYY') }</span>
+                                    <span>${ mangaData.release_date }</span>
                                 </li>`
                             : ''
                         }
